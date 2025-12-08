@@ -7,7 +7,7 @@
 
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, sans-serif;
       padding: 20px;
       background: #f5f5f5;
       color: #333;
@@ -30,61 +30,29 @@
       margin-bottom: 16px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.06);
     }
-    label {
-      display: block;
-      margin: 6px 0;
-      font-size: 0.95rem;
-    }
+    label { display: block; margin: 6px 0; font-size: 0.95rem; }
     input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 0.95rem;
+      width: 100%; padding: 8px; margin-top: 4px;
+      border-radius: 6px; border: 1px solid #ccc; font-size: 0.95rem;
     }
-    textarea {
-      resize: vertical;
-    }
-    .flavour-group-title {
-      margin-top: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
+    textarea { resize: vertical; }
+    .flavour-group-title { margin-top: 10px; font-weight: 600; }
     .flavour-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 4px 10px;
       margin-top: 6px;
     }
-    .flavour-list label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin: 0;
-      font-size: 0.9rem;
-    }
     button {
-      background: #006b80;
-      color: white;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 8px;
-      margin-top: 10px;
-      width: 100%;
-      font-size: 17px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button:active {
-      transform: scale(0.98);
+      background: #006b80; color: white;
+      padding: 14px 20px; border: none; border-radius: 8px;
+      margin-top: 10px; width: 100%; font-size: 17px;
+      cursor: pointer; font-weight: 600;
     }
   </style>
 </head>
 
 <body>
-
-<div id="app">
 
 <h1>Vito's Daily Log</h1>
 
@@ -157,25 +125,21 @@
 
 <button onclick="saveLog()">Save Daily Log</button>
 
-</div> <!-- END APP WRAPPER -->
-
 <script>
-  // Set today as default date
-  (function init() {
-    const d = new Date().toISOString().slice(0, 10);
-    document.getElementById("Date").value = d;
-  })();
+  // Default date today
+  document.getElementById("Date").value = new Date().toISOString().slice(0, 10);
 
   function saveLog() {
     const data = {};
 
-    const inputs = document.querySelectorAll("input, textarea, select");
-    inputs.forEach(el => {
-      if (el.type === "checkbox" || el.type === "radio") return;
+    // collect non-checkbox inputs
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+      if (el.type === "checkbox") return;
       if (!el.id) return;
       data[el.id] = el.value;
     });
 
+    // collect flavours
     document.querySelectorAll(".flav").forEach(box => {
       data[box.value] = box.checked ? "Yes" : "";
     });
@@ -186,8 +150,8 @@
     }
 
     google.script.run
-      .withSuccessHandler(msg => alert("Saved! " + msg))
-      .withFailureHandler(err => alert("Error: " + err.message))
+      .withSuccessHandler(msg => alert("Saved!"))
+      .withFailureHandler(err => alert("ERROR: " + err.message))
       .saveDailyLog(data);
   }
 </script>

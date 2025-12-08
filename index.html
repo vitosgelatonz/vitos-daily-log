@@ -127,10 +127,33 @@
       loadDay(today);
 
       document.getElementById("datePicker").addEventListener("change", (e) => {
-        const newDate = e.target.value;
-        document.getElementById("date").value = newDate;
-        loadDay(newDate);
-      });
+  const raw = e.target.value;  // browser locale format or yyyy-mm-dd depending on browser
+
+  // Force-convert into yyyy-mm-dd
+  const parts = raw.includes("/") ? raw.split("/") : raw.split("-");
+  
+  let yyyy, mm, dd;
+
+  if (parts[0].length === 4) {
+    // already yyyy-mm-dd
+    yyyy = parts[0];
+    mm = parts[1];
+    dd = parts[2];
+  } else {
+    // dd/mm/yyyy → convert
+    dd = parts[0];
+    mm = parts[1];
+    yyyy = parts[2];
+  }
+
+  const normalized = `${yyyy}-${mm}-${dd}`;
+
+  console.log("Converted date:", normalized);
+
+  document.getElementById("date").value = normalized;
+  loadDay(normalized);
+});
+
 
       document.querySelectorAll(".tab").forEach(tab => {
         tab.addEventListener("click", () => {

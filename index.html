@@ -1,160 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vito's Daily Log</title>
 
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #006b80;
-    }
-    h2 {
-      margin-top: 20px;
-      margin-bottom: 8px;
-      font-size: 1.1rem;
-      color: #006b80;
-    }
-    .section {
-      background: white;
-      padding: 16px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
-    }
-    label { display: block; margin: 6px 0; font-size: 0.95rem; }
-    input, textarea, select {
-      width: 100%; padding: 8px; margin-top: 4px;
-      border-radius: 6px; border: 1px solid #ccc; font-size: 0.95rem;
-    }
-    textarea { resize: vertical; }
-    .flavour-group-title { margin-top: 10px; font-weight: 600; }
-    .flavour-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 4px 10px;
-      margin-top: 6px;
-    }
-    button {
-      background: #006b80; color: white;
-      padding: 14px 20px; border: none; border-radius: 8px;
-      margin-top: 10px; width: 100%; font-size: 17px;
-      cursor: pointer; font-weight: 600;
-    }
-  </style>
-</head>
+  <script>
+    // YOUR BACKEND URL
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxVFSDbSOVNiJpuAwcKZw00uLGUvcGmbsp8Emhx0JiK66aa0qyrrxgFESb5KuHBrHI/exec";
 
+    document.addEventListener("DOMContentLoaded", () => {
+      // Load today's data by default
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("date").value = today;
+      loadDay(today);
+
+      // Tab switching
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".section").forEach(s => s.style.display = "none");
+
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.target).style.display = "block";
+        });
+      });
+
+      // Save button
+      document.getElementById("saveBtn").addEventListener("click", saveDay);
+    });
+
+    /******************************************************
+     * LOAD DAY
+     *****************************************************/
+    function loadDay(dateString) {
+      google.script.run
+        .withSuccessHandler(fillForm)
+        .loadDay(dateString);
+    }
+
+    function fillForm(result) {
+      if (!result.exists) {
+        clearForm();
+        return;
+      }
+
+      const data = result.data;
+
+      Object.keys(data).forEach(key => {
+        const el = document.querySelector(`[data-field="${key}"]`);
+        if (!el) return;
+
+        if (el.type === "checkbox") {
+          el.checked = data[key] === true || data[key] === "TRUE";
+        } else {
+          el.value = data[key];
+        }
+      });
+    }
+
+    /******************************************************
+     * SAVE DAY
+     *****************************************************/
+    function saveDay() {
+      const fieldElements = document.querySelectorAll("[data-field]");
+      const payload = {};
+
+      fieldElements.forEach(el => {
+        const key = el.dataset.field;
+
+        if (el.type === "checkbox") {
+          payload[key] = el.checked ? true : false;
+        } else {
+          payload[key] = el.value || "";
+        }
+      });
+
+      google.script.run
+        .withSuccessHandler(() => alert("Saved!"))
+        .saveDay(payload);
+    }
+
+    /******************************************************
+     * CLEAR FORM WHEN NO DATA FOR A DATE
+     *****************************************************/
+    function clearForm() {
+      const els = document.querySelectorAll("[data-field]");
+      els.forEach(el => {
+        if (el.type === "checkbox") el.checked = false;
+        else el.value = "";
+      });
+    }
+  </script>
+
+</head>
 <body>
 
-<h1>Vito's Daily Log</h1>
+  <!-- TABS -->
+  <div id="tabs">
+    <button class="tab active" data-target="todayInfo">Today's Info</button>
+    <button class="tab" data-target="flavours">Flavours</button>
+    <button class="tab" data-target="cash">Cash</button>
+  </div>
 
-<div class="section">
-  <h2>Date</h2>
-  <input type="date" id="Date">
-</div>
+  <!-- SECTIONS -->
 
-<div class="section">
-  <h2>Day Details</h2>
+  <!-- TODAY'S INFO -->
+  <div id="todayInfo" class="section" style="display:block">
 
-  <label>Opening Time <input type="time" id="Opening Time"></label>
-  <label>Closing Time <input type="time" id="Closing Time"></label>
-  <label>Cash Start <input type="number" id="Cash Start"></label>
-  <label>Cash End <input type="number" id="Cash End"></label>
-  <label>Weather Visual <input type="text" id="Weather Visual"></label>
-  <label>Weather Max (°C) <input type="number" id="Weather Max (°C)"></label>
-  <label>Weather Min (°C) <input type="number" id="Weather Min (°C)"></label>
-  <label>Rain (mm) <input type="number" id="Rain (mm)"></label>
-  <label>Wind (km/h) <input type="number" id="Wind (km/h)"></label>
-  <label>Tide Info <input type="text" id="Tide Info"></label>
-</div>
+    <h3>Date</h3>
+    <input type="date" id="date" data-field="Date" onchange="loadDay(this.value)" />
 
-<div class="section">
-  <h2>Special Event</h2>
-  <label>Special Event?
-    <select id="Special Event?">
+    <h3>Weather (auto + manual)</h3>
+    <label>Weather Visual (tags)</label>
+    <input type="text" data-field="Weather Visual" placeholder="Sunny, Windy, etc" />
+
+    <label>Max Temp (°C)</label>
+    <input type="number" data-field="Weather Max (°C)" />
+
+    <label>Min Temp (°C)</label>
+    <input type="number" data-field="Weather Min (°C)" />
+
+    <label>Rain (mm)</label>
+    <input type="number" data-field="Rain (mm)" />
+
+    <label>Wind (km/h)</label>
+    <input type="number" data-field="Wind (km/h)" />
+
+    <h3>Tide Info</h3>
+    <input type="text" data-field="Tide Info" placeholder="High 3:12pm / Low 10:45am" />
+
+    <h3>Special Event?</h3>
+    <select data-field="Special Event?">
       <option>No</option>
       <option>Yes</option>
     </select>
-  </label>
-  <label>Event Name <input type="text" id="Event Name"></label>
-</div>
 
-<div class="section">
-  <h2>Notes</h2>
-  <textarea id="Notes" rows="3"></textarea>
-</div>
+    <h3>Event Name</h3>
+    <input type="text" data-field="Event Name" />
 
-<div class="section">
-  <h2>Flavours Available</h2>
+    <h3>Notes</h3>
+    <textarea data-field="Notes"></textarea>
 
-  <div class="flavour-group-title">Permanent</div>
-  <div class="flavour-list">
-    <label><input type="checkbox" class="flav" value="Biscoff"> Biscoff</label>
-    <label><input type="checkbox" class="flav" value="Black Sand Piha"> Black Sand Piha</label>
-    <label><input type="checkbox" class="flav" value="Dark Choco Brownie"> Dark Choco Brownie</label>
-    <label><input type="checkbox" class="flav" value="Dulce de Leche"> Dulce de Leche</label>
-    <label><input type="checkbox" class="flav" value="Hazelnut Crunch"> Hazelnut Crunch</label>
-    <label><input type="checkbox" class="flav" value="Mango Bliss"> Mango Bliss</label>
-    <label><input type="checkbox" class="flav" value="Menta Cioccolato"> Menta Cioccolato</label>
-    <label><input type="checkbox" class="flav" value="Reese's Peanut Butter"> Reese's Peanut Butter</label>
-    <label><input type="checkbox" class="flav" value="Strawberry Dream"> Strawberry Dream</label>
-    <label><input type="checkbox" class="flav" value="Vanilla Oreo"> Vanilla Oreo</label>
+    <h3>Opening Time</h3>
+    <input type="time" data-field="Opening Time" />
+
+    <h3>Closing Time</h3>
+    <input type="time" data-field="Closing Time" />
+
   </div>
 
-  <div class="flavour-group-title">Specials</div>
-  <div class="flavour-list">
-    <label><input type="checkbox" class="flav" value="Amarena"> Amarena</label>
-    <label><input type="checkbox" class="flav" value="Banana Caramel"> Banana Caramel</label>
-    <label><input type="checkbox" class="flav" value="Cookie Crumble"> Cookie Crumble</label>
-    <label><input type="checkbox" class="flav" value="Chocolate Velvet"> Chocolate Velvet</label>
-    <label><input type="checkbox" class="flav" value="Lemon Cake Delight"> Lemon Cake Delight</label>
-    <label><input type="checkbox" class="flav" value="Moka"> Moka</label>
-    <label><input type="checkbox" class="flav" value="Pineapple Paradise"> Pineapple Paradise</label>
-    <label><input type="checkbox" class="flav" value="Simply Coconut"> Simply Coconut</label>
-    <label><input type="checkbox" class="flav" value="Salted White"> Salted White</label>
+  <!-- FLAVOURS -->
+  <div id="flavours" class="section" style="display:none">
+
+    <h3>Permanent Flavours</h3>
+
+    <label><input type="checkbox" data-field="Biscoff" /> Biscoff</label><br>
+    <label><input type="checkbox" data-field="Black Sand Piha" /> Black Sand Piha</label><br>
+    <label><input type="checkbox" data-field="Dark Choco Brownie" /> Dark Choco Brownie</label><br>
+    <label><input type="checkbox" data-field="Dulce de Leche" /> Dulce de Leche</label><br>
+    <label><input type="checkbox" data-field="Hazelnut Crunch" /> Hazelnut Crunch</label><br>
+    <label><input type="checkbox" data-field="Mango Bliss" /> Mango Bliss</label><br>
+    <label><input type="checkbox" data-field="Menta Cioccolato" /> Menta Cioccolato</label><br>
+    <label><input type="checkbox" data-field="Reese's Peanut Butter" /> Reese's Peanut Butter</label><br>
+    <label><input type="checkbox" data-field="Strawberry Dream" /> Strawberry Dream</label><br>
+    <label><input type="checkbox" data-field="Vanilla Oreo" /> Vanilla Oreo</label><br>
+
+    <h3>Daily Specials</h3>
+
+    <label><input type="checkbox" data-field="Amarena" /> Amarena</label><br>
+    <label><input type="checkbox" data-field="Banana Caramel" /> Banana Caramel</label><br>
+    <label><input type="checkbox" data-field="Cookie Crumble" /> Cookie Crumble</label><br>
+    <label><input type="checkbox" data-field="Chocolate Velvet" /> Chocolate Velvet</label><br>
+    <label><input type="checkbox" data-field="Lemon Cake Delight" /> Lemon Cake Delight</label><br>
+    <label><input type="checkbox" data-field="Moka" /> Moka</label><br>
+    <label><input type="checkbox" data-field="Pineapple Paradise" /> Pineapple Paradise</label><br>
+    <label><input type="checkbox" data-field="Simply Coconut" /> Simply Coconut</label><br>
+    <label><input type="checkbox" data-field="Salted White" /> Salted White</label><br>
+
   </div>
-</div>
 
-<button onclick="saveLog()">Save Daily Log</button>
+  <!-- CASH -->
+  <div id="cash" class="section" style="display:none">
 
-<script>
-  // Default date today
-  document.getElementById("Date").value = new Date().toISOString().slice(0, 10);
+    <h3>Cash Start</h3>
+    <input type="number" data-field="Cash Start" />
 
-  function saveLog() {
-    const data = {};
+    <h3>Cash End</h3>
+    <input type="number" data-field="Cash End" />
 
-    // collect non-checkbox inputs
-    document.querySelectorAll("input, textarea, select").forEach(el => {
-      if (el.type === "checkbox") return;
-      if (!el.id) return;
-      data[el.id] = el.value;
-    });
+  </div>
 
-    // collect flavours
-    document.querySelectorAll(".flav").forEach(box => {
-      data[box.value] = box.checked ? "Yes" : "";
-    });
-
-    if (!data["Date"]) {
-      alert("Please select a date.");
-      return;
-    }
-
-    google.script.run
-      .withSuccessHandler(msg => alert("Saved!"))
-      .withFailureHandler(err => alert("ERROR: " + err.message))
-      .saveDailyLog(data);
-  }
-</script>
+  <!-- SAVE BUTTON -->
+  <div style="position:fixed; bottom:20px; left:0; right:0; text-align:center;">
+    <button id="saveBtn" style="padding:15px 40px; font-size:20px;">
+      SAVE
+    </button>
+  </div>
 
 </body>
 </html>

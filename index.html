@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vito's Daily Log</title>
+
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -30,19 +31,17 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.06);
     }
     label {
-      display:block;
-      margin:6px 0;
+      display: block;
+      margin: 6px 0;
       font-size: 0.95rem;
     }
     input, textarea, select {
-      width:100%;
-      padding:8px;
-      margin-top:4px;
-      border-radius:6px;
-      border:1px solid #ccc;
-      font-size:0.95rem;
-      font-family: inherit;
-      box-sizing: border-box;
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
     }
     textarea {
       resize: vertical;
@@ -53,117 +52,78 @@
       font-size: 0.95rem;
     }
     .flavour-list {
-      display:grid;
+      display: grid;
       grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
-      gap:4px 10px;
+      gap: 4px 10px;
       margin-top: 6px;
     }
     .flavour-list label {
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin:0;
-      font-size:0.9rem;
-    }
-    .flavour-list input[type="checkbox"] {
-      width:auto;
-      margin-top:0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      font-size: 0.9rem;
     }
     button {
-      background:#006b80;
-      color:white;
-      padding:14px 20px;
-      border:none;
-      border-radius:8px;
-      margin-top:10px;
-      width:100%;
-      font-size:17px;
-      cursor:pointer;
-      font-weight:600;
+      background: #006b80;
+      color: white;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      width: 100%;
+      font-size: 17px;
+      cursor: pointer;
+      font-weight: 600;
     }
     button:active {
       transform: scale(0.98);
     }
   </style>
 </head>
+
 <body>
+
+<div id="app">
 
 <h1>Vito's Daily Log</h1>
 
-<!-- DATE -->
 <div class="section">
   <h2>Date</h2>
   <input type="date" id="Date">
 </div>
 
-<!-- WEATHER + CASH -->
 <div class="section">
   <h2>Day Details</h2>
 
-  <label>Opening Time
-    <input type="time" id="Opening Time">
-  </label>
-
-  <label>Closing Time
-    <input type="time" id="Closing Time">
-  </label>
-
-  <label>Cash Start
-    <input type="number" id="Cash Start">
-  </label>
-
-  <label>Cash End
-    <input type="number" id="Cash End">
-  </label>
-
-  <label>Weather Visual
-    <input type="text" id="Weather Visual" placeholder="Sunny, cloudy, windy…">
-  </label>
-
-  <label>Weather Max (°C)
-    <input type="number" id="Weather Max (°C)">
-  </label>
-
-  <label>Weather Min (°C)
-    <input type="number" id="Weather Min (°C)">
-  </label>
-
-  <label>Rain (mm)
-    <input type="number" id="Rain (mm)">
-  </label>
-
-  <label>Wind (km/h)
-    <input type="number" id="Wind (km/h)">
-  </label>
-
-  <label>Tide Info
-    <input type="text" id="Tide Info" placeholder="High at 3pm, low at 9am…">
-  </label>
+  <label>Opening Time <input type="time" id="Opening Time"></label>
+  <label>Closing Time <input type="time" id="Closing Time"></label>
+  <label>Cash Start <input type="number" id="Cash Start"></label>
+  <label>Cash End <input type="number" id="Cash End"></label>
+  <label>Weather Visual <input type="text" id="Weather Visual"></label>
+  <label>Weather Max (°C) <input type="number" id="Weather Max (°C)"></label>
+  <label>Weather Min (°C) <input type="number" id="Weather Min (°C)"></label>
+  <label>Rain (mm) <input type="number" id="Rain (mm)"></label>
+  <label>Wind (km/h) <input type="number" id="Wind (km/h)"></label>
+  <label>Tide Info <input type="text" id="Tide Info"></label>
 </div>
 
-<!-- EVENT -->
 <div class="section">
   <h2>Special Event</h2>
-
   <label>Special Event?
     <select id="Special Event?">
       <option>No</option>
       <option>Yes</option>
     </select>
   </label>
-
-  <label>Event Name
-    <input type="text" id="Event Name" placeholder="Market, booking, school group…">
-  </label>
+  <label>Event Name <input type="text" id="Event Name"></label>
 </div>
 
-<!-- NOTES -->
 <div class="section">
   <h2>Notes</h2>
-  <textarea id="Notes" rows="3" placeholder="Anything important about today (machine issues, rush times, etc.)"></textarea>
+  <textarea id="Notes" rows="3"></textarea>
 </div>
 
-<!-- FLAVOURS -->
 <div class="section">
   <h2>Flavours Available</h2>
 
@@ -181,7 +141,7 @@
     <label><input type="checkbox" class="flav" value="Vanilla Oreo"> Vanilla Oreo</label>
   </div>
 
-  <div class="flavour-group-title" style="margin-top:12px;">Specials</div>
+  <div class="flavour-group-title">Specials</div>
   <div class="flavour-list">
     <label><input type="checkbox" class="flav" value="Amarena"> Amarena</label>
     <label><input type="checkbox" class="flav" value="Banana Caramel"> Banana Caramel</label>
@@ -197,33 +157,27 @@
 
 <button onclick="saveLog()">Save Daily Log</button>
 
+</div> <!-- END APP WRAPPER -->
+
 <script>
-  // Set default date to today
-  (function initDate() {
-    const d = new Date();
-    const iso = d.toISOString().slice(0, 10);
-    const dateInput = document.getElementById("Date");
-    if (dateInput) dateInput.value = iso;
+  // Set today as default date
+  (function init() {
+    const d = new Date().toISOString().slice(0, 10);
+    document.getElementById("Date").value = d;
   })();
 
   function saveLog() {
     const data = {};
 
-    // collect simple inputs (id must match header name!)
     const inputs = document.querySelectorAll("input, textarea, select");
     inputs.forEach(el => {
-      // we'll handle checkboxes separately
-      if (el.type === "checkbox") return;
-      if (el.type === "radio") return;
+      if (el.type === "checkbox" || el.type === "radio") return;
       if (!el.id) return;
       data[el.id] = el.value;
     });
 
-    // collect flavours: each flavour has its own column with same name
-    const fl = document.querySelectorAll(".flav");
-    fl.forEach(box => {
-      const colName = box.value; // this matches the header
-      data[colName] = box.checked ? "Yes" : "";
+    document.querySelectorAll(".flav").forEach(box => {
+      data[box.value] = box.checked ? "Yes" : "";
     });
 
     if (!data["Date"]) {
@@ -232,12 +186,8 @@
     }
 
     google.script.run
-      .withSuccessHandler(msg => {
-        alert("Saved! " + (msg || ""));
-      })
-      .withFailureHandler(err => {
-        alert("Error: " + (err.message || err));
-      })
+      .withSuccessHandler(msg => alert("Saved! " + msg))
+      .withFailureHandler(err => alert("Error: " + err.message))
       .saveDailyLog(data);
   }
 </script>

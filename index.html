@@ -3,113 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Vito's Daily Log</title>
-
-  <script>
-    // 🔗 YOUR BACKEND URL (UPDATED)
-    const BACKEND_URL =
-      "https://script.google.com/macros/s/AKfycbyv1EE65VAcyM3kLKfaYwXhYbZ24RTZt_ti3c_fPo6o5NGGUar-bpOBnQKPFm3zjV3iCw/exec";
-
-    document.addEventListener("DOMContentLoaded", () => {
-      /********************************************
-       * SET TODAY'S DATE (VISIBLE + HIDDEN INPUTS)
-       ********************************************/
-      const today = new Date().toISOString().split("T")[0];
-
-      // Set visible picker
-      document.getElementById("datePicker").value = today;
-
-      // Set hidden actual field that is sent to backend
-      document.getElementById("date").value = today;
-
-      // Load today's data
-      loadDay(today);
-
-      // When user changes date: update hidden field + reload
-      document.getElementById("datePicker").addEventListener("change", (e) => {
-        const newDate = e.target.value;
-        document.getElementById("date").value = newDate;
-        loadDay(newDate);
-      });
-
-      // Tab switching
-      document.querySelectorAll(".tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-          document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-
-          tab.classList.add("active");
-          document.getElementById(tab.dataset.target).style.display = "block";
-        });
-      });
-
-      // Save button
-      document.getElementById("saveBtn").addEventListener("click", saveDay);
-    });
-
-    /******************************************************
-     * LOAD DAY
-     *****************************************************/
-    function loadDay(dateString) {
-      google.script.run
-        .withSuccessHandler(fillForm)
-        .loadDay(dateString);
-    }
-
-    function fillForm(result) {
-      if (!result.exists) {
-        clearForm();
-        return;
-      }
-
-      const data = result.data;
-
-      Object.keys(data).forEach(key => {
-        const el = document.querySelector(`[data-field="${key}"]`);
-        if (!el) return;
-
-        if (el.type === "checkbox") {
-          el.checked = data[key] === true || data[key] === "TRUE";
-        } else {
-          el.value = data[key];
-        }
-      });
-    }
-
-    /******************************************************
-     * SAVE DAY
-     *****************************************************/
-    function saveDay() {
-      const fieldElements = document.querySelectorAll("[data-field]");
-      const payload = {};
-
-      fieldElements.forEach(el => {
-        const key = el.dataset.field;
-
-        if (el.type === "checkbox") {
-          payload[key] = el.checked ? true : false;
-        } else {
-          payload[key] = el.value || "";
-        }
-      });
-
-      google.script.run
-        .withSuccessHandler(() => alert("Saved!"))
-        .saveDay(payload);
-    }
-
-    /******************************************************
-     * CLEAR FORM WHEN NO DATA FOR A DATE
-     *****************************************************/
-    function clearForm() {
-      const els = document.querySelectorAll("[data-field]");
-      els.forEach(el => {
-        if (el.type === "checkbox") el.checked = false;
-        else el.value = "";
-      });
-    }
-  </script>
-
 </head>
+
 <body>
 
   <!-- TABS -->
@@ -126,10 +21,8 @@
 
     <h3>Date</h3>
 
-    <!-- Visible date picker -->
     <input type="date" id="datePicker" />
 
-    <!-- Hidden field used for saving -->
     <input type="hidden" id="date" data-field="Date" />
 
     <h3>Weather (auto + manual)</h3>
@@ -218,6 +111,77 @@
       SAVE
     </button>
   </div>
+
+  <!-- MOVED SCRIPT TO BOTTOM (CRITICAL FIX) -->
+  <script>
+    const BACKEND_URL =
+      "https://script.google.com/macros/s/AKfycbyv1EE65VAcyM3kLKfaYwXhYbZ24RTZt_ti3c_fPo6o5NGGUar-bpOBnQKPFm3zjV3iCw/exec";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const today = new Date().toISOString().split("T")[0];
+
+      document.getElementById("datePicker").value = today;
+      document.getElementById("date").value = today;
+
+      loadDay(today);
+
+      document.getElementById("datePicker").addEventListener("change", (e) => {
+        const newDate = e.target.value;
+        document.getElementById("date").value = newDate;
+        loadDay(newDate);
+      });
+
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".section").forEach(s => s.style.display = "none");
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.target).style.display = "block";
+        });
+      });
+
+      document.getElementById("saveBtn").addEventListener("click", saveDay);
+    });
+
+    function loadDay(dateString) {
+      google.script.run.withSuccessHandler(fillForm).loadDay(dateString);
+    }
+
+    function fillForm(result) {
+      if (!result.exists) return clearForm();
+
+      const data = result.data;
+      Object.keys(data).forEach(key => {
+        const el = document.querySelector(`[data-field="${key}"]`);
+        if (!el) return;
+
+        if (el.type === "checkbox") {
+          el.checked = data[key] === true || data[key] === "TRUE";
+        } else {
+          el.value = data[key];
+        }
+      });
+    }
+
+    function saveDay() {
+      const payload = {};
+      document.querySelectorAll("[data-field]").forEach(el => {
+        const key = el.dataset.field;
+        payload[key] = el.type === "checkbox" ? el.checked : el.value || "";
+      });
+
+      google.script.run.withSuccessHandler(() => alert("Saved!")).saveDay(payload);
+    }
+
+    function clearForm() {
+      document.querySelectorAll("[data-field]").forEach(el => {
+        if (el.type === "checkbox") el.checked = false;
+        else el.value = "";
+      });
+    }
+
+  </script>
 
 </body>
 </html>

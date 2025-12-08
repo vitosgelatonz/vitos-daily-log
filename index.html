@@ -1,1 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Log – Vito's Gelato</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-main: #f4efea;
+      --card-bg: #ffffff;
+      --accent: #077791;
+      --accent-soft: #dfdbd2;
+      --danger: #c62828;
+      --success: #2e7d32;
+      --text-main: #333333;
+      --text-soft: #777777;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-size: 18px;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+    }
+
+    section {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+    }
+
+    section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+
+    label {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.95rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 14px;
+      width: 100%;
+    }
+
+    button.secondary {
+      background: #bbbbbb;
+      color: black;
+    }
+
+    .flavour-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .flavour-item {
+      background: #f3f3f3;
+      padding: 10px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flavour-item input {
+      width: auto;
+      margin-top: 0;
+      transform: scale(1.2);
+    }
+
+    .radio-row {
+      display: flex;
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .radio-row label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 0;
+      font-size: 0.95rem;
+    }
+
+    #success-popup {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--accent);
+      color: white;
+      padding: 14px 26px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 9999;
+      font-weight: 600;
+    }
+
+    #success-popup.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <h1>Daily Log – Vito's Gelato</h1>
+
+    <!-- DATE -->
+    <section>
+      <h2>Date</h2>
+      <input type="date" id="details-date" />
+    </section>
+
+    <!-- WEATHER -->
+    <section>
+      <h2>Weather</h2>
+
+      <button id="auto-weather" type="button">Get Weather Automatically</button>
+
+      <label>Max Temp (°C):</label>
+      <input id="max-temp" />
+
+      <label>Min Temp (°C):</label>
+      <input id="min-temp" />
+
+      <label>Rain (mm):</label>
+      <input id="rain-mm" />
+
+      <label>Wind Speed (km/h):</label>
+      <input id="wind-km" />
+
+      <label style="margin-top:10px;">Tide Status:</label>
+      <div class="radio-row">
+        <label><input type="radio" name="tide" value="Low">Low</label>
+        <label><input type="radio" name="tide" value="Normal" checked>Normal</label>
+        <label><input type="radio" name="tide" value="High">High</label>
+      </div>
+
+      <label style="margin-top:10px;">Weather Notes:</label>
+      <textarea id="weather-notes" placeholder="Sunny, cloudy, etc"></textarea>
+    </section>
+
+    <!-- FLAVOURS -->
+    <section>
+      <h2>Flavours Available</h2>
+
+      <label>Permanent Flavours:</label>
+      <div class="flavour-list" id="perm-flavours"></div>
+
+      <label style="margin-top:16px;">Specials:</label>
+      <div class="flavour-list" id="special-flavours"></div>
+    </section>
+
+    <!-- EVENTS -->
+    <section>
+      <h2>Special Event?</h2>
+      <div class="radio-row">
+        <label><input type="radio" name="event" value="No" checked>No</label>
+        <label><input type="radio" name="event" value="Yes">Yes</label>
+      </div>
+
+      <textarea id="event-notes" placeholder="Event name / details..."
+                style="display:none; margin-top:10px;"></textarea>
+    </section>
+
+    <!-- SAVE -->
+    <button id="save-btn" type="button">Save Daily Log</button>
+  </div>
+
+  <div id="success-popup">Saved!</div>
+
+<script>
+const SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxpiMFTVb3KMVQ054Y6-Sf20KCdna0oxxd93K1Nk-JlmL905lSDRAOmUA-WcuM_6DZW/exec";
+
+const permanentFlavours = [
+  "Biscoff", "Black Sand Piha", "Dark Choco Brownie", "Dulce de Leche",
+  "Hazelnut Crunch", "Mango Bliss", "Menta Cioccolato", "Reese's Peanut Butter",
+  "Strawberry Dream", "Vanilla Oreo"
+];
+
+const specialFlavours = [
+  "Amarena", "Banana Caramel", "Cookie Crumble", "Chocolate Velvet",
+  "Lemon Cake Delight", "Moka", "Pineapple Paradise", "Simply Coconut",
+  "Salted White"
+];
+
+function renderFlavourLists() {
+  const permDiv = document.getElementById("perm-flavours");
+  const specDiv = document.getElementById("special-flavours");
+
+  permanentFlavours.forEach(f => {
+    permDiv.innerHTML += `
+      <div class="flavour-item">
+        <input type="checkbox" id="perm-${f}" checked />
+        <label for="perm-${f}">${f}</label>
+      </div>`;
+  });
+
+  specialFlavours.forEach(f => {
+    specDiv.innerHTML += `
+      <div class="flavour-item">
+        <input type="checkbox" id="spec-${f}" />
+        <label for="spec-${f}">${f}</label>
+      </div>`;
+  });
+}
+
+renderFlavourLists();
+
+/* EVENT RADIO BEHAVIOR */
+document.querySelectorAll("input[name='event']").forEach(r => {
+  r.addEventListener("change", (ev) => {
+    const notes = document.getElementById("event-notes");
+    notes.style.display = (ev.target.value === "Yes") ? "block" : "none";
+  });
+});
+
+/* WEATHER FETCH */
+async function fetchWeather() {
+  const lat = -36.8485;
+  const lon = 174.7633;
+
+  try {
+    const weatherRes = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&timezone=Pacific/Auckland`
+    );
+
+    const w = await weatherRes.json();
+
+    document.getElementById("max-temp").value = w.daily.temperature_2m_max[0];
+    document.getElementById("min-temp").value = w.daily.temperature_2m_min[0];
+    document.getElementById("rain-mm").value = w.daily.precipitation_sum[0];
+    document.getElementById("wind-km").value = w.daily.windspeed_10m_max[0];
+
+    alert("Weather retrieved!");
+  } catch (err) {
+    alert("Weather fetch failed.");
+    console.error(err);
+  }
+}
+
+document.getElementById("auto-weather").addEventListener("click", fetchWeather);
+
+/* SEND TO SCRIPT */
+async function saveLog() {
+  const date = document.getElementById("details-date").value;
+  if (!date) {
+    alert("Please select a date.");
+    return;
+  }
+
+  const data = {};
+
+  data["Date"] = date;
+  data["Weather Visual"] = document.getElementById("weather-notes").value || "";
+  data["Weather Max (°C)"] = document.getElementById("max-temp").value || "";
+  data["Weather Min (°C)"] = document.getElementById("min-temp").value || "";
+  data["Rain (mm)"]        = document.getElementById("rain-mm").value || "";
+  data["Wind (km/h)"]      = document.getElementById("wind-km").value || "";
+
+  const tideRadio = document.querySelector("input[name='tide']:checked");
+  data["Tide Info"] = tideRadio ? tideRadio.value : "";
+
+  const eventVal = document.querySelector("input[name='event']:checked").value;
+  data["Special Event?"] = eventVal;
+  data["Event Name"] = document.getElementById("event-notes").value || "";
+  data["Notes"] = "";
+
+  permanentFlavours.forEach(f => {
+    const cb = document.getElementById(`perm-${f}`);
+    data[f] = cb && cb.checked ? "Yes" : "No";
+  });
+
+  specialFlavours.forEach(f => {
+    const cb = document.getElementById(`spec-${f}`);
+    data[f] = cb && cb.checked ? "Yes" : "No";
+  });
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "save", data })
+    });
+
+    const popup = document.getElementById("success-popup");
+    popup.textContent = "Saved!";
+    popup.classList.add("show");
+    setTimeout(() => popup.classList.remove("show"), 2000);
+
+  } catch (err) {
+    alert("Failed to save log.");
+    console.error(err);
+  }
+}
+
+document.getElementById("save-btn").addEventListener("click", saveLog);
+</script>
+
+</body>
+</html>
 

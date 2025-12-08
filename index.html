@@ -1,130 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vito's Daily Log</title>
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f4f0ec;
-        margin: 20px;
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vito's Daily Log</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background:#f5f5f5; }
     h2 { margin-top: 30px; }
-    label { display: block; margin: 5px 0; }
-    .section {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
+    .section { background:white; padding:20px; border-radius:8px; margin-bottom:20px; }
+    label { display:block; margin:6px 0; }
+    .row { margin-bottom:10px; }
+    button { 
+      background:#006b80; 
+      color:white; 
+      padding:15px 25px; 
+      border:none; 
+      border-radius:6px; 
+      font-size:18px; 
+      cursor:pointer;
+      width:100%;
     }
-    button {
-        width: 100%;
-        padding: 15px;
-        font-size: 18px;
-        background: #066a82;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-</style>
-
+  </style>
 </head>
+
 <body>
 
 <h1>Vito's Daily Log</h1>
 
 <div class="section">
-    <h2>Weather</h2>
-    <label>Date <input type="date" id="date" /></label>
-    <label>Weather Visual <input type="text" id="weatherVisual" /></label>
-    <label>Weather Max <input type="number" id="weatherMax" /></label>
-    <label>Weather Min <input type="number" id="weatherMin" /></label>
-    <label>Rain (mm) <input type="number" id="rainMm" /></label>
-    <label>Wind (km/h) <input type="number" id="windKm" /></label>
-    <label>Tide Info <input type="text" id="tideInfo" /></label>
+  <h2>Date</h2>
+  <input type="date" id="date" />
 </div>
 
 <div class="section">
-    <h2>Flavours Available</h2>
+  <h2>Weather</h2>
 
-    <h3>Permanent</h3>
-    <label><input type="checkbox" class="flavour" data-name="Biscoff"> Biscoff</label>
-    <label><input type="checkbox" class="flavour" data-name="Black Sand Piha"> Black Sand Piha</label>
-    <label><input type="checkbox" class="flavour" data-name="Dark Choco Brownie"> Dark Choco Brownie</label>
-    <label><input type="checkbox" class="flavour" data-name="Dulce de Leche"> Dulce de Leche</label>
-    <label><input type="checkbox" class="flavour" data-name="Hazelnut Crunch"> Hazelnut Crunch</label>
-    <label><input type="checkbox" class="flavour" data-name="Mango Bliss"> Mango Bliss</label>
-    <label><input type="checkbox" class="flavour" data-name="Menta Cioccolato"> Menta Cioccolato</label>
-    <label><input type="checkbox" class="flavour" data-name="Reese's Peanut Butter"> Reese's Peanut Butter</label>
-    <label><input type="checkbox" class="flavour" data-name="Strawberry Dream"> Strawberry Dream</label>
-    <label><input type="checkbox" class="flavour" data-name="Vanilla Oreo"> Vanilla Oreo</label>
+  <label>Max Temp <input type="number" id="max" /></label>
+  <label>Min Temp <input type="number" id="min" /></label>
+  <label>Rain (mm) <input type="number" id="rain" /></label>
+  <label>Wind (km/h) <input type="number" id="wind" /></label>
 
-    <h3>Specials</h3>
-    <label><input type="checkbox" class="flavour" data-name="Amarena"> Amarena</label>
-    <label><input type="checkbox" class="flavour" data-name="Banana Caramel"> Banana Caramel</label>
-    <label><input type="checkbox" class="flavour" data-name="Cookie Crumble"> Cookie Crumble</label>
-    <label><input type="checkbox" class="flavour" data-name="Chocolate Velvet"> Chocolate Velvet</label>
-    <label><input type="checkbox" class="flavour" data-name="Lemon Cake Delight"> Lemon Cake Delight</label>
-    <label><input type="checkbox" class="flavour" data-name="Moka"> Moka</label>
-    <label><input type="checkbox" class="flavour" data-name="Pineapple Paradise"> Pineapple Paradise</label>
-    <label><input type="checkbox" class="flavour" data-name="Simply Coconut"> Simply Coconut</label>
-    <label><input type="checkbox" class="flavour" data-name="Salted White"> Salted White</label>
+  <label>Weather notes</label>
+  <textarea id="notes" rows="3" style="width:100%;"></textarea>
 </div>
 
 <div class="section">
-    <h2>Special Event</h2>
-    <label><input type="radio" name="event" value="No" checked> No</label>
-    <label><input type="radio" name="event" value="Yes"> Yes</label>
+  <h2>Flavours Available</h2>
 
-    <label>Event Name <input type="text" id="eventName" /></label>
-    <label>Notes <textarea id="notes"></textarea></label>
+  <h3>Permanent</h3>
+  <label><input type="checkbox" class="flavour" value="Biscoff"> Biscoff</label>
+  <label><input type="checkbox" class="flavour" value="Black Sand Piha"> Black Sand Piha</label>
+  <label><input type="checkbox" class="flavour" value="Dark Choco Brownie"> Dark Choco Brownie</label>
+  <label><input type="checkbox" class="flavour" value="Dulce de Leche"> Dulce de Leche</label>
+  <label><input type="checkbox" class="flavour" value="Hazelnut Crunch"> Hazelnut Crunch</label>
+  <label><input type="checkbox" class="flavour" value="Mango Bliss"> Mango Bliss</label>
+  <label><input type="checkbox" class="flavour" value="Menta Cioccolato"> Menta Cioccolato</label>
+  <label><input type="checkbox" class="flavour" value="Reese's Peanut Butter"> Reese's Peanut Butter</label>
+  <label><input type="checkbox" class="flavour" value="Strawberry Dream"> Strawberry Dream</label>
+  <label><input type="checkbox" class="flavour" value="Vanilla Oreo"> Vanilla Oreo</label>
+
+  <h3>Specials</h3>
+  <label><input type="checkbox" class="flavour" value="Amarena"> Amarena</label>
+  <label><input type="checkbox" class="flavour" value="Banana Caramel"> Banana Caramel</label>
+  <label><input type="checkbox" class="flavour" value="Cookie Crumble"> Cookie Crumble</label>
+  <label><input type="checkbox" class="flavour" value="Chocolate Velvet"> Chocolate Velvet</label>
+  <label><input type="checkbox" class="flavour" value="Lemon Cake Delight"> Lemon Cake Delight</label>
+  <label><input type="checkbox" class="flavour" value="Moka"> Moka</label>
+  <label><input type="checkbox" class="flavour" value="Pineapple Paradise"> Pineapple Paradise</label>
+  <label><input type="checkbox" class="flavour" value="Simply Coconut"> Simply Coconut</label>
+  <label><input type="checkbox" class="flavour" value="Salted White"> Salted White</label>
+</div>
+
+<div class="section">
+  <h2>Special Event?</h2>
+  <label><input type="radio" name="event" value="No" checked> No</label>
+  <label><input type="radio" name="event" value="Yes"> Yes</label>
+
+  <label>Event Name</label>
+  <input type="text" id="eventName" style="width:100%;" />
 </div>
 
 <button onclick="saveLog()">Save Daily Log</button>
 
 <script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxy49XpqmkgrS6ysFu__We6FkwbIm-MAyGG_dlAzJX7bUs4QiE5FnxP7dpHg-mksE-X/exec";
+
 async function saveLog() {
+  const date = document.getElementById("date").value;
+  if (!date) {
+    alert("Please select a date.");
+    return;
+  }
 
-    const data = {
-        "Date": document.getElementById("date").value,
-        "Weather Visual": document.getElementById("weatherVisual").value,
-        "Weather Max (°C)": document.getElementById("weatherMax").value,
-        "Weather Min (°C)": document.getElementById("weatherMin").value,
-        "Rain (mm)": document.getElementById("rainMm").value,
-        "Wind (km/h)": document.getElementById("windKm").value,
-        "Tide Info": document.getElementById("tideInfo").value,
-        "Special Event?": document.querySelector("input[name='event']:checked").value,
-        "Event Name": document.getElementById("eventName").value,
-        "Notes": document.getElementById("notes").value,
+  const flavours = [...document.querySelectorAll(".flavour")]
+      .filter(f => f.checked)
+      .map(f => f.value);
 
-        // Flavours — TRUE / FALSE per spreadsheet header
-        "Biscoff": false, "Black Sand Piha": false, "Dark Choco Brownie": false,
-        "Dulce de Leche": false, "Hazelnut Crunch": false, "Mango Bliss": false,
-        "Menta Cioccolato": false, "Reese's Peanut Butter": false,
-        "Strawberry Dream": false, "Vanilla Oreo": false,
-        "Amarena": false, "Banana Caramel": false, "Cookie Crumble": false,
-        "Chocolate Velvet": false, "Lemon Cake Delight": false,
-        "Moka": false, "Pineapple Paradise": false,
-        "Simply Coconut": false, "Salted White": false
-    };
+  const payload = {
+    Date: date,
+    Max: document.getElementById("max").value,
+    Min: document.getElementById("min").value,
+    Rain: document.getElementById("rain").value,
+    Wind: document.getElementById("wind").value,
+    WeatherNotes: document.getElementById("notes").value,
+    Event: document.querySelector('input[name="event"]:checked').value,
+    EventName: document.getElementById("eventName").value,
+    Flavours: flavours.join(", ")
+  };
 
-    // fill flavour selections
-    document.querySelectorAll(".flavour").forEach(f => {
-        if (f.checked) data[f.dataset.name] = true;
-    });
-
-    // Send to Google Apps Script without CORS preflight
-    fetch("https://script.google.com/macros/s/AKfycbwJn9-SI8lC6earo5TzOSEErvn-xj9fMpQJDcQzI9SeC1xyg90I8EV6aGtw-MNZsGJE/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data })
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: payload })
     });
 
     alert("Saved!");
+  } catch (err) {
+    alert("Failed to save log.");
+  }
 }
 </script>
 

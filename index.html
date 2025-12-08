@@ -10,44 +10,41 @@
       "https://script.google.com/macros/s/AKfycbx8tO08b3WlPs-bbrHVBsAEVCqqc2mXcJCUce1aLmBWbVY0TY2UdbNaKEaF00aU2b_cog/exec";
 
     /************************************************************
-     * CONVERT YYYY-MM-DD (picker format) → DD/MM/YYYY (saving)
-     * CONVERT DD/MM/YYYY (sheet format) → YYYY-MM-DD (picker)
+     * DATE FORMAT CONVERSION HELPERS
      ************************************************************/
-
     function toUserFormat(isoDate) {
-      // isoDate example: 2025-12-09
       const [y, m, d] = isoDate.split("-");
       return `${d}/${m}/${y}`;
     }
 
     function toIsoFormat(userDate) {
-      // userDate example: 09/12/2025
       const [d, m, y] = userDate.split("/");
       return `${y}-${m}-${d}`;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+
       /********************************************
-       * SET TODAY'S DATE 
+       * FIXED — USE LOCAL NZ DATE, NOT UTC
        ********************************************/
-      const todayISO = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+      const todayISO = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD (local)
       const todayUser = toUserFormat(todayISO);                // DD/MM/YYYY
 
-      // Show user-friendly format in visible field
+      // Visible picker (ISO)
       document.getElementById("datePicker").value = todayISO;
 
-      // Save DD/MM/YYYY to hidden field
+      // Hidden field for saving (DD/MM/YYYY)
       document.getElementById("date").value = todayUser;
 
       // Load today's data
       loadDay(todayUser);
 
       /********************************************
-       * When user changes visible date picker:
+       * When user changes the visible date picker
        ********************************************/
       document.getElementById("datePicker").addEventListener("change", (e) => {
-        const isoDate = e.target.value;     // YYYY-MM-DD
-        const userDate = toUserFormat(isoDate); // to DD/MM/YYYY
+        const isoDate = e.target.value;
+        const userDate = toUserFormat(isoDate);
 
         document.getElementById("date").value = userDate;
         loadDay(userDate);
@@ -93,9 +90,8 @@
           el.checked = data[key] === true || data[key] === "TRUE";
         }
         else if (key === "Date") {
-          // convert sheet date → visible date format
           const dateObj = new Date(data[key]);
-          const iso = dateObj.toISOString().split("T")[0];
+          const iso = dateObj.toLocaleDateString("en-CA");
 
           document.getElementById("datePicker").value = iso;
           document.getElementById("date").value = toUserFormat(iso);
@@ -158,7 +154,7 @@
     <!-- Visible date picker (YYYY-MM-DD) -->
     <input type="date" id="datePicker" />
 
-    <!-- Hidden DD/MM/YYYY used for saving -->
+    <!-- Hidden DD/MM/YYYY saved to spreadsheet -->
     <input type="hidden" id="date" data-field="Date" />
 
     <h3>Weather (auto + manual)</h3>

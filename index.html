@@ -3,6 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <title>Vito's Daily Log</title>
+
+  <script>
+    // 🔗 YOUR NEW BACKEND URL
+    const BACKEND_URL =
+      "https://script.google.com/macros/s/AKfycbx8tO08b3WlPs-bbrHVBsAEVCqqc2mXcJCUce1aLmBWbVY0TY2UdbNaKEaF00aU2b_cog/exec";
+
+    /************************************************************
+     * CONVERT YYYY-MM-DD (picker format) → DD/MM/YYYY (saving)
+     * CONVERT DD/MM/YYYY (sheet format) → YYYY-MM-DD (picker)
+     ************************************************************/
+
+    function toUserFormat(isoDate) {
+      // isoDate example: 2025-12-09
+      const [y, m, d] = isoDate.split("-");
+      return `${d}/${m}/${y}`;
+    }
+
+    function toIsoFormat(userDate) {
+      // userDate example: 09/12/2025
+      const [d, m, y] = userDate.split("/");
+      return `${y}-${m}-${d}`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      /********************************************
+       * SET TODAY'S DATE 
+       ********************************************/
+      const todayISO = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+      const todayUser = toUserFormat(todayISO);                // DD/MM/YYYY
+
+      // Show user-friendly format in visible field
+      document.getElementById("datePicker").value = todayISO;
+
+      // Save DD/MM/YYYY to hidden field
+      document.getElementById("date").value = todayUser;
+
+      // Load today's data
+      loadDay(todayUser);
+
+      /********************************************
+       * When user changes visible date picker:
+       ********************************************/
+      document.getElementById("datePicker").addEventListener("change", (e) => {
+        const isoDate = e.target.value;     // YYYY-MM-DD
+        const userDate = toUserFormat(isoDate); // to DD/MM/YYYY
+
+        document.getElementById("date").value = userDate;
+        loadDay(userDate);
+      });
+
+      // Tab switching logic
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".section").forEach(s => s.style.display = "none");
+
+          tab.classList.add("active");
+          document.getElementById(tab.dataset.target).style.display = "block";
+        });
+      });
+
+      // SAVE button
+      document.getElementById("saveBtn").addEventListener("click", saveDay);
+    });
+
+    /******************************************************
+     * LOAD DAY
+     *****************************************************/
+    function loadDay(dateString) {
+      google.script.run
+        .withSuccessHandler(fillForm)
+        .loadDay(dateString);
+    }
+
+    function fillForm(result) {
+      if (!result.exists) {
+        clearForm();
+        return;
+      }
+
+      const data = result.data;
+
+      Object.keys(data).forEach(key => {
+        const el = document.querySelector(`[data-field="${key}"]`);
+        if (!el) return;
+
+        if (el.type === "checkbox") {
+          el.checked = data[key] === true || data[key] === "TRUE";
+        }
+        else if (key === "Date") {
+          // convert sheet date → visible date format
+          const dateObj = new Date(data[key]);
+          const iso = dateObj.toISOString().split("T")[0];
+
+          document.getElementById("datePicker").value = iso;
+          document.getElementById("date").value = toUserFormat(iso);
+        }
+        else {
+          el.value = data[key];
+        }
+      });
+    }
+
+    /******************************************************
+     * SAVE DAY
+     *****************************************************/
+    function saveDay() {
+      const fieldElements = document.querySelectorAll("[data-field]");
+      const payload = {};
+
+      fieldElements.forEach(el => {
+        const key = el.dataset.field;
+
+        if (el.type === "checkbox") {
+          payload[key] = el.checked ? true : false;
+        } else {
+          payload[key] = el.value || "";
+        }
+      });
+
+      google.script.run
+        .withSuccessHandler(() => alert("Saved!"))
+        .saveDay(payload);
+    }
+
+    /******************************************************
+     * CLEAR FORM WHEN NO DATA EXISTS
+     *****************************************************/
+    function clearForm() {
+      const els = document.querySelectorAll("[data-field]");
+      els.forEach(el => {
+        if (el.type === "checkbox") el.checked = false;
+        else if (el.dataset.field !== "Date") el.value = "";
+      });
+    }
+  </script>
 </head>
 
 <body>
@@ -14,15 +150,15 @@
     <button class="tab" data-target="cash">Cash</button>
   </div>
 
-  <!-- SECTIONS -->
-
   <!-- TODAY'S INFO -->
   <div id="todayInfo" class="section" style="display:block">
 
     <h3>Date</h3>
 
+    <!-- Visible date picker (YYYY-MM-DD) -->
     <input type="date" id="datePicker" />
 
+    <!-- Hidden DD/MM/YYYY used for saving -->
     <input type="hidden" id="date" data-field="Date" />
 
     <h3>Weather (auto + manual)</h3>
@@ -111,100 +247,6 @@
       SAVE
     </button>
   </div>
-
-  <!-- MOVED SCRIPT TO BOTTOM (CRITICAL FIX) -->
-  <script>
-    const BACKEND_URL =
-      "https://script.google.com/macros/s/AKfycbybsxhX-xq2dfIz6YyUYs0I4FS8eWRFMgNfb3apOc1W5B-RZEARL5o1eFfT5dwYzPY2ag/exec";
-
-    document.addEventListener("DOMContentLoaded", () => {
-
-      const today = new Date().toISOString().split("T")[0];
-
-      document.getElementById("datePicker").value = today;
-      document.getElementById("date").value = today;
-
-      loadDay(today);
-
-      document.getElementById("datePicker").addEventListener("change", (e) => {
-  const raw = e.target.value;  // browser locale format or yyyy-mm-dd depending on browser
-
-  // Force-convert into yyyy-mm-dd
-  const parts = raw.includes("/") ? raw.split("/") : raw.split("-");
-  
-  let yyyy, mm, dd;
-
-  if (parts[0].length === 4) {
-    // already yyyy-mm-dd
-    yyyy = parts[0];
-    mm = parts[1];
-    dd = parts[2];
-  } else {
-    // dd/mm/yyyy → convert
-    dd = parts[0];
-    mm = parts[1];
-    yyyy = parts[2];
-  }
-
-  const normalized = `${yyyy}-${mm}-${dd}`;
-
-  console.log("Converted date:", normalized);
-
-  document.getElementById("date").value = normalized;
-  loadDay(normalized);
-});
-
-
-      document.querySelectorAll(".tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-          document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-          tab.classList.add("active");
-          document.getElementById(tab.dataset.target).style.display = "block";
-        });
-      });
-
-      document.getElementById("saveBtn").addEventListener("click", saveDay);
-    });
-
-    function loadDay(dateString) {
-      google.script.run.withSuccessHandler(fillForm).loadDay(dateString);
-    }
-
-    function fillForm(result) {
-      if (!result.exists) return clearForm();
-
-      const data = result.data;
-      Object.keys(data).forEach(key => {
-        const el = document.querySelector(`[data-field="${key}"]`);
-        if (!el) return;
-
-        if (el.type === "checkbox") {
-          el.checked = data[key] === true || data[key] === "TRUE";
-        } else {
-          el.value = data[key];
-        }
-      });
-    }
-
-    function saveDay() {
-      const payload = {};
-      document.querySelectorAll("[data-field]").forEach(el => {
-        const key = el.dataset.field;
-        payload[key] = el.type === "checkbox" ? el.checked : el.value || "";
-      });
-
-      google.script.run.withSuccessHandler(() => alert("Saved!")).saveDay(payload);
-    }
-
-    function clearForm() {
-      document.querySelectorAll("[data-field]").forEach(el => {
-        if (el.type === "checkbox") el.checked = false;
-        else el.value = "";
-      });
-    }
-
-  </script>
 
 </body>
 </html>

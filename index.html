@@ -1,115 +1,245 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vito's Daily Log</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background:#f5f5f5; }
-    h2 { margin-top: 20px; }
-    .section { background:white; padding:20px; border-radius:8px; margin-bottom:20px; }
-    label { display:block; margin:6px 0; }
-    input, textarea, select { width:100%; padding:6px; margin-top:4px; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #006b80;
+    }
+    h2 {
+      margin-top: 20px;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      color: #006b80;
+    }
+    .section {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+    label {
+      display:block;
+      margin:6px 0;
+      font-size: 0.95rem;
+    }
+    input, textarea, select {
+      width:100%;
+      padding:8px;
+      margin-top:4px;
+      border-radius:6px;
+      border:1px solid #ccc;
+      font-size:0.95rem;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .flavour-group-title {
+      margin-top: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .flavour-list {
+      display:grid;
+      grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+      gap:4px 10px;
+      margin-top: 6px;
+    }
+    .flavour-list label {
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin:0;
+      font-size:0.9rem;
+    }
+    .flavour-list input[type="checkbox"] {
+      width:auto;
+      margin-top:0;
+    }
     button {
       background:#006b80;
       color:white;
-      padding:14px;
-      font-size:18px;
+      padding:14px 20px;
       border:none;
       border-radius:8px;
+      margin-top:10px;
       width:100%;
+      font-size:17px;
       cursor:pointer;
-      margin-top:20px;
+      font-weight:600;
+    }
+    button:active {
+      transform: scale(0.98);
     }
   </style>
 </head>
-
 <body>
 
 <h1>Vito's Daily Log</h1>
 
+<!-- DATE -->
 <div class="section">
   <h2>Date</h2>
   <input type="date" id="Date">
 </div>
 
+<!-- WEATHER + CASH -->
 <div class="section">
-  <h2>Weather & Day Info</h2>
-  <label>Opening Time <input type="time" id="Opening Time"></label>
-  <label>Closing Time <input type="time" id="Closing Time"></label>
-  <label>Cash Start <input type="number" id="Cash Start"></label>
-  <label>Cash End <input type="number" id="Cash End"></label>
-  <label>Weather Max (°C) <input type="number" id="Weather Max (°C)"></label>
-  <label>Weather Min (°C) <input type="number" id="Weather Min (°C)"></label>
-  <label>Rain (mm) <input type="number" id="Rain (mm)"></label>
-  <label>Wind (km/h) <input type="number" id="Wind (km/h)"></label>
-  <label>Tide Info <input type="text" id="Tide Info"></label>
-  <label>Weather Visual <input type="text" id="Weather Visual"></label>
+  <h2>Day Details</h2>
+
+  <label>Opening Time
+    <input type="time" id="Opening Time">
+  </label>
+
+  <label>Closing Time
+    <input type="time" id="Closing Time">
+  </label>
+
+  <label>Cash Start
+    <input type="number" id="Cash Start">
+  </label>
+
+  <label>Cash End
+    <input type="number" id="Cash End">
+  </label>
+
+  <label>Weather Visual
+    <input type="text" id="Weather Visual" placeholder="Sunny, cloudy, windy…">
+  </label>
+
+  <label>Weather Max (°C)
+    <input type="number" id="Weather Max (°C)">
+  </label>
+
+  <label>Weather Min (°C)
+    <input type="number" id="Weather Min (°C)">
+  </label>
+
+  <label>Rain (mm)
+    <input type="number" id="Rain (mm)">
+  </label>
+
+  <label>Wind (km/h)
+    <input type="number" id="Wind (km/h)">
+  </label>
+
+  <label>Tide Info
+    <input type="text" id="Tide Info" placeholder="High at 3pm, low at 9am…">
+  </label>
 </div>
 
+<!-- EVENT -->
 <div class="section">
   <h2>Special Event</h2>
+
   <label>Special Event?
     <select id="Special Event?">
       <option>No</option>
       <option>Yes</option>
     </select>
   </label>
-  <label>Event Name <input type="text" id="Event Name"></label>
+
+  <label>Event Name
+    <input type="text" id="Event Name" placeholder="Market, booking, school group…">
+  </label>
 </div>
 
+<!-- NOTES -->
 <div class="section">
   <h2>Notes</h2>
-  <textarea id="Notes" rows="3"></textarea>
+  <textarea id="Notes" rows="3" placeholder="Anything important about today (machine issues, rush times, etc.)"></textarea>
 </div>
 
+<!-- FLAVOURS -->
 <div class="section">
   <h2>Flavours Available</h2>
 
-  <strong>Permanent:</strong>
-  <label><input type="checkbox" class="flav" value="Biscoff"> Biscoff</label>
-  <label><input type="checkbox" class="flav" value="Black Sand Piha"> Black Sand Piha</label>
-  <label><input type="checkbox" class="flav" value="Dark Choco Brownie"> Dark Choco Brownie</label>
-  <label><input type="checkbox" class="flav" value="Dulce de Leche"> Dulce de Leche</label>
-  <label><input type="checkbox" class="flav" value="Hazelnut Crunch"> Hazelnut Crunch</label>
-  <label><input type="checkbox" class="flav" value="Mango Bliss"> Mango Bliss</label>
-  <label><input type="checkbox" class="flav" value="Menta Cioccolato"> Menta Cioccolato</label>
-  <label><input type="checkbox" class="flav" value="Reese's Peanut Butter"> Reese's Peanut Butter</label>
-  <label><input type="checkbox" class="flav" value="Strawberry Dream"> Strawberry Dream</label>
-  <label><input type="checkbox" class="flav" value="Vanilla Oreo"> Vanilla Oreo</label>
+  <div class="flavour-group-title">Permanent</div>
+  <div class="flavour-list">
+    <label><input type="checkbox" class="flav" value="Biscoff"> Biscoff</label>
+    <label><input type="checkbox" class="flav" value="Black Sand Piha"> Black Sand Piha</label>
+    <label><input type="checkbox" class="flav" value="Dark Choco Brownie"> Dark Choco Brownie</label>
+    <label><input type="checkbox" class="flav" value="Dulce de Leche"> Dulce de Leche</label>
+    <label><input type="checkbox" class="flav" value="Hazelnut Crunch"> Hazelnut Crunch</label>
+    <label><input type="checkbox" class="flav" value="Mango Bliss"> Mango Bliss</label>
+    <label><input type="checkbox" class="flav" value="Menta Cioccolato"> Menta Cioccolato</label>
+    <label><input type="checkbox" class="flav" value="Reese's Peanut Butter"> Reese's Peanut Butter</label>
+    <label><input type="checkbox" class="flav" value="Strawberry Dream"> Strawberry Dream</label>
+    <label><input type="checkbox" class="flav" value="Vanilla Oreo"> Vanilla Oreo</label>
+  </div>
 
-  <strong>Specials:</strong>
-  <label><input type="checkbox" class="flav" value="Amarena"> Amarena</label>
-  <label><input type="checkbox" class="flav" value="Banana Caramel"> Banana Caramel</label>
-  <label><input type="checkbox" class="flav" value="Cookie Crumble"> Cookie Crumble</label>
-  <label><input type="checkbox" class="flav" value="Chocolate Velvet"> Chocolate Velvet</label>
-  <label><input type="checkbox" class="flav" value="Lemon Cake Delight"> Lemon Cake Delight</label>
-  <label><input type="checkbox" class="flav" value="Moka"> Moka</label>
-  <label><input type="checkbox" class="flav" value="Pineapple Paradise"> Pineapple Paradise</label>
-  <label><input type="checkbox" class="flav" value="Simply Coconut"> Simply Coconut</label>
-  <label><input type="checkbox" class="flav" value="Salted White"> Salted White</label>
+  <div class="flavour-group-title" style="margin-top:12px;">Specials</div>
+  <div class="flavour-list">
+    <label><input type="checkbox" class="flav" value="Amarena"> Amarena</label>
+    <label><input type="checkbox" class="flav" value="Banana Caramel"> Banana Caramel</label>
+    <label><input type="checkbox" class="flav" value="Cookie Crumble"> Cookie Crumble</label>
+    <label><input type="checkbox" class="flav" value="Chocolate Velvet"> Chocolate Velvet</label>
+    <label><input type="checkbox" class="flav" value="Lemon Cake Delight"> Lemon Cake Delight</label>
+    <label><input type="checkbox" class="flav" value="Moka"> Moka</label>
+    <label><input type="checkbox" class="flav" value="Pineapple Paradise"> Pineapple Paradise</label>
+    <label><input type="checkbox" class="flav" value="Simply Coconut"> Simply Coconut</label>
+    <label><input type="checkbox" class="flav" value="Salted White"> Salted White</label>
+  </div>
 </div>
 
 <button onclick="saveLog()">Save Daily Log</button>
 
 <script>
-function saveLog() {
-  const data = {};
+  // Set default date to today
+  (function initDate() {
+    const d = new Date();
+    const iso = d.toISOString().slice(0, 10);
+    const dateInput = document.getElementById("Date");
+    if (dateInput) dateInput.value = iso;
+  })();
 
-  // basic inputs
-  document.querySelectorAll("input, textarea, select").forEach(el => {
-    if (el.type !== "checkbox") data[el.id] = el.value;
-  });
+  function saveLog() {
+    const data = {};
 
-  // flavours
-  document.querySelectorAll(".flav").forEach(box => {
-    data[box.value] = box.checked ? "Yes" : "";
-  });
+    // collect simple inputs (id must match header name!)
+    const inputs = document.querySelectorAll("input, textarea, select");
+    inputs.forEach(el => {
+      // we'll handle checkboxes separately
+      if (el.type === "checkbox") return;
+      if (el.type === "radio") return;
+      if (!el.id) return;
+      data[el.id] = el.value;
+    });
 
-  google.script.run
-    .withSuccessHandler(() => alert("Saved!"))
-    .withFailureHandler(err => alert("Error: " + err.message))
-    .saveDailyLog(data);
-}
+    // collect flavours: each flavour has its own column with same name
+    const fl = document.querySelectorAll(".flav");
+    fl.forEach(box => {
+      const colName = box.value; // this matches the header
+      data[colName] = box.checked ? "Yes" : "";
+    });
+
+    if (!data["Date"]) {
+      alert("Please select a date.");
+      return;
+    }
+
+    google.script.run
+      .withSuccessHandler(msg => {
+        alert("Saved! " + (msg || ""));
+      })
+      .withFailureHandler(err => {
+        alert("Error: " + (err.message || err));
+      })
+      .saveDailyLog(data);
+  }
 </script>
 
 </body>

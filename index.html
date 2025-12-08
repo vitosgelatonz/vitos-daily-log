@@ -27,20 +27,20 @@
       /********************************************
        * FIXED — USE LOCAL NZ DATE, NOT UTC
        ********************************************/
-      const todayISO = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD (local)
-      const todayUser = toUserFormat(todayISO);                // DD/MM/YYYY
+      const todayISO = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local
+      const todayUser = toUserFormat(todayISO);                 // DD/MM/YYYY
 
-      // Visible picker (ISO)
+      // Visible picker
       document.getElementById("datePicker").value = todayISO;
 
-      // Hidden field for saving (DD/MM/YYYY)
+      // Hidden DD/MM/YYYY field
       document.getElementById("date").value = todayUser;
 
       // Load today's data
       loadDay(todayUser);
 
       /********************************************
-       * When user changes the visible date picker
+       * Date Picker Change
        ********************************************/
       document.getElementById("datePicker").addEventListener("change", (e) => {
         const isoDate = e.target.value;
@@ -50,7 +50,9 @@
         loadDay(userDate);
       });
 
-      // Tab switching logic
+      /********************************************
+       * TAB SWITCHING
+       ********************************************/
       document.querySelectorAll(".tab").forEach(tab => {
         tab.addEventListener("click", () => {
           document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -61,7 +63,9 @@
         });
       });
 
-      // SAVE button
+      /********************************************
+       * SAVE BUTTON
+       ********************************************/
       document.getElementById("saveBtn").addEventListener("click", saveDay);
     });
 
@@ -103,24 +107,34 @@
     }
 
     /******************************************************
-     * SAVE DAY
+     * SAVE DAY — ⭐ Now shows "Saving…" + disables button
      *****************************************************/
     function saveDay() {
+      const btn = document.getElementById("saveBtn");
+      btn.disabled = true;
+      btn.textContent = "Saving…";
+
       const fieldElements = document.querySelectorAll("[data-field]");
       const payload = {};
 
       fieldElements.forEach(el => {
         const key = el.dataset.field;
-
-        if (el.type === "checkbox") {
-          payload[key] = el.checked ? true : false;
-        } else {
-          payload[key] = el.value || "";
-        }
+        payload[key] = (el.type === "checkbox") ? el.checked : (el.value || "");
       });
 
       google.script.run
-        .withSuccessHandler(() => alert("Saved!"))
+        .withSuccessHandler(() => {
+          btn.textContent = "Saved!";
+          setTimeout(() => {
+            btn.textContent = "SAVE";
+            btn.disabled = false;
+          }, 1500);
+        })
+        .withFailureHandler(err => {
+          alert("Error saving: " + err.message);
+          btn.textContent = "SAVE";
+          btn.disabled = false;
+        })
         .saveDay(payload);
     }
 
@@ -151,10 +165,10 @@
 
     <h3>Date</h3>
 
-    <!-- Visible date picker (YYYY-MM-DD) -->
+    <!-- Visible date picker -->
     <input type="date" id="datePicker" />
 
-    <!-- Hidden DD/MM/YYYY saved to spreadsheet -->
+    <!-- Hidden DD/MM/YYYY saved to sheet -->
     <input type="hidden" id="date" data-field="Date" />
 
     <h3>Weather (auto + manual)</h3>
@@ -226,7 +240,7 @@
 
   </div>
 
-  <!-- CASH -->
+  <!-- CASH SECTION -->
   <div id="cash" class="section" style="display:none">
 
     <h3>Cash Start</h3>
@@ -239,9 +253,7 @@
 
   <!-- SAVE BUTTON -->
   <div style="position:fixed; bottom:20px; left:0; right:0; text-align:center;">
-    <button id="saveBtn" style="padding:15px 40px; font-size:20px;">
-      SAVE
-    </button>
+    <button id="saveBtn" style="padding:15px 40px; font-size:20px;">SAVE</button>
   </div>
 
 </body>

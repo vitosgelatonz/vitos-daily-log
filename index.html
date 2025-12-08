@@ -5,14 +5,31 @@
   <title>Vito's Daily Log</title>
 
   <script>
-    // YOUR BACKEND URL
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxVFSDbSOVNiJpuAwcKZw00uLGUvcGmbsp8Emhx0JiK66aa0qyrrxgFESb5KuHBrHI/exec";
+    // 🔗 YOUR BACKEND URL (UPDATED)
+    const BACKEND_URL =
+      "https://script.google.com/macros/s/AKfycbyv1EE65VAcyM3kLKfaYwXhYbZ24RTZt_ti3c_fPo6o5NGGUar-bpOBnQKPFm3zjV3iCw/exec";
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Load today's data by default
+      /********************************************
+       * SET TODAY'S DATE (VISIBLE + HIDDEN INPUTS)
+       ********************************************/
       const today = new Date().toISOString().split("T")[0];
+
+      // Set visible picker
+      document.getElementById("datePicker").value = today;
+
+      // Set hidden actual field that is sent to backend
       document.getElementById("date").value = today;
+
+      // Load today's data
       loadDay(today);
+
+      // When user changes date: update hidden field + reload
+      document.getElementById("datePicker").addEventListener("change", (e) => {
+        const newDate = e.target.value;
+        document.getElementById("date").value = newDate;
+        loadDay(newDate);
+      });
 
       // Tab switching
       document.querySelectorAll(".tab").forEach(tab => {
@@ -108,7 +125,12 @@
   <div id="todayInfo" class="section" style="display:block">
 
     <h3>Date</h3>
-    <input type="date" id="date" data-field="Date" onchange="loadDay(this.value)" />
+
+    <!-- Visible date picker -->
+    <input type="date" id="datePicker" />
+
+    <!-- Hidden field used for saving -->
+    <input type="hidden" id="date" data-field="Date" />
 
     <h3>Weather (auto + manual)</h3>
     <label>Weather Visual (tags)</label>

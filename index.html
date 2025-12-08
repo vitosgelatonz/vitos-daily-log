@@ -1,273 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Daily Log – Vito's Gelato</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vito's Daily Log</title>
 
-  <style>
-    :root {
-      --bg-main: #f4efea;
-      --card-bg: #ffffff;
-      --accent: #077791;
-      --accent-soft: #dfdbd2;
-      --danger: #c62828;
-      --success: #2e7d32;
-      --text-main: #333333;
-      --text-soft: #777777;
-    }
-
+<style>
     body {
-      margin: 0;
-      background: var(--bg-main);
-      font-family: system-ui, sans-serif;
-      font-size: 18px;
-      color: var(--text-main);
+        font-family: Arial, sans-serif;
+        background: #f4f0ec;
+        margin: 20px;
     }
-
-    .app {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 14px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 18px;
-      font-size: 1.8rem;
-      color: var(--accent);
-    }
-
+    h2 { margin-top: 30px; }
+    label { display: block; margin: 5px 0; }
     .section {
-      background: var(--card-bg);
-      padding: 16px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
     }
+    button {
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+        background: #066a82;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+</style>
 
-    label {
-      display: block;
-      margin: 8px 0 4px;
-      font-size: 1rem;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      font-family: inherit;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .flavour-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 10px;
-    }
-
-    .flavour-item {
-      background: #f3f3f3;
-      padding: 10px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .flavour-item input {
-      transform: scale(1.3);
-    }
-
-    #save-btn {
-      background: var(--accent);
-      color: white;
-      padding: 14px 26px;
-      font-size: 1.3rem;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 20px;
-      font-weight: 600;
-    }
-
-    #saving {
-      display: none;
-      margin-top: 10px;
-      text-align: center;
-      font-weight: 600;
-      color: var(--accent);
-    }
-  </style>
 </head>
-
 <body>
-<div class="app">
 
-  <h1>Daily Log</h1>
+<h1>Vito's Daily Log</h1>
 
-  <!-- TODAY'S INFO -->
-  <div class="section">
-    <label>Date</label>
-    <input type="date" id="date" />
+<div class="section">
+    <h2>Weather</h2>
+    <label>Date <input type="date" id="date" /></label>
+    <label>Weather Visual <input type="text" id="weatherVisual" /></label>
+    <label>Weather Max <input type="number" id="weatherMax" /></label>
+    <label>Weather Min <input type="number" id="weatherMin" /></label>
+    <label>Rain (mm) <input type="number" id="rainMm" /></label>
+    <label>Wind (km/h) <input type="number" id="windKm" /></label>
+    <label>Tide Info <input type="text" id="tideInfo" /></label>
+</div>
 
-    <label>Opening Time</label>
-    <input type="time" id="opening" />
-
-    <label>Closing Time</label>
-    <input type="time" id="closing" />
-
-    <label>Max Temp (°C)</label>
-    <input id="max-temp" />
-
-    <label>Min Temp (°C)</label>
-    <input id="min-temp" />
-
-    <label>Rain (mm)</label>
-    <input id="rain-mm" />
-
-    <label>Wind (km/h)</label>
-    <input id="wind-km" />
-
-    <label>Tide Status</label>
-    <select id="tide">
-      <option>Normal</option>
-      <option>Low</option>
-      <option>High</option>
-    </select>
-
-    <label>Weather Notes</label>
-    <input id="weather-notes" />
-  </div>
-
-  <!-- FLAVOURS -->
-  <div class="section">
+<div class="section">
     <h2>Flavours Available</h2>
 
-    <h3>Permanent Flavours</h3>
-    <div id="perm-flavours" class="flavour-list"></div>
+    <h3>Permanent</h3>
+    <label><input type="checkbox" class="flavour" data-name="Biscoff"> Biscoff</label>
+    <label><input type="checkbox" class="flavour" data-name="Black Sand Piha"> Black Sand Piha</label>
+    <label><input type="checkbox" class="flavour" data-name="Dark Choco Brownie"> Dark Choco Brownie</label>
+    <label><input type="checkbox" class="flavour" data-name="Dulce de Leche"> Dulce de Leche</label>
+    <label><input type="checkbox" class="flavour" data-name="Hazelnut Crunch"> Hazelnut Crunch</label>
+    <label><input type="checkbox" class="flavour" data-name="Mango Bliss"> Mango Bliss</label>
+    <label><input type="checkbox" class="flavour" data-name="Menta Cioccolato"> Menta Cioccolato</label>
+    <label><input type="checkbox" class="flavour" data-name="Reese's Peanut Butter"> Reese's Peanut Butter</label>
+    <label><input type="checkbox" class="flavour" data-name="Strawberry Dream"> Strawberry Dream</label>
+    <label><input type="checkbox" class="flavour" data-name="Vanilla Oreo"> Vanilla Oreo</label>
 
     <h3>Specials</h3>
-    <div id="special-flavours" class="flavour-list"></div>
-  </div>
+    <label><input type="checkbox" class="flavour" data-name="Amarena"> Amarena</label>
+    <label><input type="checkbox" class="flavour" data-name="Banana Caramel"> Banana Caramel</label>
+    <label><input type="checkbox" class="flavour" data-name="Cookie Crumble"> Cookie Crumble</label>
+    <label><input type="checkbox" class="flavour" data-name="Chocolate Velvet"> Chocolate Velvet</label>
+    <label><input type="checkbox" class="flavour" data-name="Lemon Cake Delight"> Lemon Cake Delight</label>
+    <label><input type="checkbox" class="flavour" data-name="Moka"> Moka</label>
+    <label><input type="checkbox" class="flavour" data-name="Pineapple Paradise"> Pineapple Paradise</label>
+    <label><input type="checkbox" class="flavour" data-name="Simply Coconut"> Simply Coconut</label>
+    <label><input type="checkbox" class="flavour" data-name="Salted White"> Salted White</label>
+</div>
 
-  <!-- SPECIAL EVENT -->
-  <div class="section">
-    <h2>Special Event?</h2>
+<div class="section">
+    <h2>Special Event</h2>
     <label><input type="radio" name="event" value="No" checked> No</label>
     <label><input type="radio" name="event" value="Yes"> Yes</label>
 
-    <label>Event Name</label>
-    <input id="event-name" placeholder="Optional" />
-  </div>
-
-  <!-- NOTES -->
-  <div class="section">
-    <h2>Notes</h2>
-    <textarea id="notes-text"></textarea>
-  </div>
-
-  <button id="save-btn">Save Daily Log</button>
-  <div id="saving">Saving…</div>
-
+    <label>Event Name <input type="text" id="eventName" /></label>
+    <label>Notes <textarea id="notes"></textarea></label>
 </div>
 
+<button onclick="saveLog()">Save Daily Log</button>
+
 <script>
-/* ------------------------ CONFIG ------------------------ */
-const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxpiMFTVb3KMVQ054Y6-Sf20KCdna0oxxd93K1Nk-JlmL905lSDRAOmUA-WcuM_6DZW/exec";
+async function saveLog() {
 
-document.getElementById("date").valueAsDate = new Date();
+    const data = {
+        "Date": document.getElementById("date").value,
+        "Weather Visual": document.getElementById("weatherVisual").value,
+        "Weather Max (°C)": document.getElementById("weatherMax").value,
+        "Weather Min (°C)": document.getElementById("weatherMin").value,
+        "Rain (mm)": document.getElementById("rainMm").value,
+        "Wind (km/h)": document.getElementById("windKm").value,
+        "Tide Info": document.getElementById("tideInfo").value,
+        "Special Event?": document.querySelector("input[name='event']:checked").value,
+        "Event Name": document.getElementById("eventName").value,
+        "Notes": document.getElementById("notes").value,
 
-/* -------- FLAVOUR LISTS -------- */
-const permanent = [
-  "Biscoff","Black Sand Piha","Dark Choco Brownie","Dulce de Leche",
-  "Hazelnut Crunch","Mango Bliss","Menta Cioccolato","Reese's Peanut Butter",
-  "Strawberry Dream","Vanilla Oreo"
-];
+        // Flavours — TRUE / FALSE per spreadsheet header
+        "Biscoff": false, "Black Sand Piha": false, "Dark Choco Brownie": false,
+        "Dulce de Leche": false, "Hazelnut Crunch": false, "Mango Bliss": false,
+        "Menta Cioccolato": false, "Reese's Peanut Butter": false,
+        "Strawberry Dream": false, "Vanilla Oreo": false,
+        "Amarena": false, "Banana Caramel": false, "Cookie Crumble": false,
+        "Chocolate Velvet": false, "Lemon Cake Delight": false,
+        "Moka": false, "Pineapple Paradise": false,
+        "Simply Coconut": false, "Salted White": false
+    };
 
-const specials = [
-  "Amarena","Banana Caramel","Cookie Crumble","Chocolate Velvet","Lemon Cake Delight",
-  "Moka","Pineapple Paradise","Simply Coconut","Salted White"
-];
-
-function renderFlavours() {
-  const permDiv = document.getElementById("perm-flavours");
-  const specDiv = document.getElementById("special-flavours");
-
-  permanent.forEach(f => {
-    permDiv.innerHTML += `
-      <div class="flavour-item">
-        <input type="checkbox" id="perm-${f}" checked />
-        <label>${f}</label>
-      </div>`;
-  });
-
-  specials.forEach(f => {
-    specDiv.innerHTML += `
-      <div class="flavour-item">
-        <input type="checkbox" id="spec-${f}" />
-        <label>${f}</label>
-      </div>`;
-  });
-}
-renderFlavours();
-
-/* -------- COLLECT FORM DATA -------- */
-function collectFormData() {
-  const data = {
-    "Date": document.getElementById("date").value,
-    "Opening Time": document.getElementById("opening").value,
-    "Closing Time": document.getElementById("closing").value,
-    "Weather Max (°C)": document.getElementById("max-temp").value,
-    "Weather Min (°C)": document.getElementById("min-temp").value,
-    "Rain (mm)": document.getElementById("rain-mm").value,
-    "Wind (km/h)": document.getElementById("wind-km").value,
-    "Tide Info": document.getElementById("tide").value,
-    "Weather Notes": document.getElementById("weather-notes").value,
-    "Special Event?": document.querySelector("input[name='event']:checked").value,
-    "Event Name": document.getElementById("event-name").value,
-    "Notes": document.getElementById("notes-text").value
-  };
-
-  permanent.forEach(f => data[f] = document.getElementById(`perm-${f}`).checked ? "Yes" : "No");
-  specials.forEach(f => data[f] = document.getElementById(`spec-${f}`).checked ? "Yes" : "No");
-
-  return data;
-}
-
-/* -------- SAVE -------- */
-document.getElementById("save-btn").addEventListener("click", async () => {
-  document.getElementById("saving").style.display = "block";
-
-  const payload = {
-    data: collectFormData()
-  };
-
-  try {
-    await fetch("https://cors.bridged.cc/" + SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+    // fill flavour selections
+    document.querySelectorAll(".flavour").forEach(f => {
+        if (f.checked) data[f.dataset.name] = true;
     });
 
-    document.getElementById("saving").style.display = "none";
-    alert("Saved!");
+    // Send to Google Apps Script without CORS preflight
+    fetch("https://script.google.com/macros/s/AKfycbxpiMFTVb3KMVQ054Y6-Sf20KCdna0oxxd93K1Nk-JlmL905lSDRAOmUA-WcuM_6DZW/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data })
+    });
 
-  } catch (err) {
-    console.error(err);
-    document.getElementById("saving").style.display = "none";
-    alert("Failed to save log.");
-  }
-});
+    alert("Saved!");
+}
 </script>
 
 </body>

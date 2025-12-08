@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Daily Log – Vito's Gelato</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     :root {
       --bg-main: #f4efea;
@@ -18,47 +19,42 @@
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg-main);
-      color: var(--text-main);
+      font-family: system-ui, sans-serif;
       font-size: 18px;
+      color: var(--text-main);
     }
 
     .app {
       max-width: 900px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 14px;
     }
 
     h1 {
-      font-size: 1.6rem;
-      margin-bottom: 12px;
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 1.8rem;
+      color: var(--accent);
     }
 
-    section {
+    .section {
       background: var(--card-bg);
       padding: 16px;
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      margin-bottom: 18px;
-    }
-
-    section h2 {
-      font-size: 1.25rem;
-      margin-bottom: 10px;
-      color: var(--accent);
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      margin-top: 8px;
-      font-size: 0.95rem;
+      margin: 8px 0 4px;
+      font-size: 1rem;
     }
 
-    input, select, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 10px;
-      margin-top: 4px;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 1rem;
@@ -67,30 +63,13 @@
 
     textarea {
       resize: vertical;
-    }
-
-    button {
-      border: none;
-      background: var(--accent);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      margin-top: 14px;
-      width: 100%;
-    }
-
-    button.secondary {
-      background: #bbbbbb;
-      color: black;
+      min-height: 120px;
     }
 
     .flavour-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 10px;
-      margin-top: 8px;
     }
 
     .flavour-item {
@@ -103,244 +82,193 @@
     }
 
     .flavour-item input {
-      width: auto;
-      margin-top: 0;
-      transform: scale(1.2);
+      transform: scale(1.3);
     }
 
-    .radio-row {
-      display: flex;
-      gap: 14px;
-      margin-top: 8px;
-    }
-    .radio-row label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 0;
-      font-size: 0.95rem;
-    }
-
-    #success-popup {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
+    #save-btn {
       background: var(--accent);
       color: white;
       padding: 14px 26px;
+      font-size: 1.3rem;
+      border: none;
       border-radius: 12px;
-      font-size: 1.1rem;
-      opacity: 0;
-      transition: all 0.4s ease;
-      z-index: 9999;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
       font-weight: 600;
     }
 
-    #success-popup.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+    #saving {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--accent);
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <h1>Daily Log – Vito's Gelato</h1>
+<div class="app">
 
-    <!-- DATE -->
-    <section>
-      <h2>Date</h2>
-      <input type="date" id="details-date" />
-    </section>
+  <h1>Daily Log</h1>
 
-    <!-- WEATHER -->
-    <section>
-      <h2>Weather</h2>
+  <!-- TODAY'S INFO -->
+  <div class="section">
+    <label>Date</label>
+    <input type="date" id="date" />
 
-      <button id="auto-weather" type="button">Get Weather Automatically</button>
+    <label>Opening Time</label>
+    <input type="time" id="opening" />
 
-      <label>Max Temp (°C):</label>
-      <input id="max-temp" />
+    <label>Closing Time</label>
+    <input type="time" id="closing" />
 
-      <label>Min Temp (°C):</label>
-      <input id="min-temp" />
+    <label>Max Temp (°C)</label>
+    <input id="max-temp" />
 
-      <label>Rain (mm):</label>
-      <input id="rain-mm" />
+    <label>Min Temp (°C)</label>
+    <input id="min-temp" />
 
-      <label>Wind Speed (km/h):</label>
-      <input id="wind-km" />
+    <label>Rain (mm)</label>
+    <input id="rain-mm" />
 
-      <label style="margin-top:10px;">Tide Status:</label>
-      <div class="radio-row">
-        <label><input type="radio" name="tide" value="Low">Low</label>
-        <label><input type="radio" name="tide" value="Normal" checked>Normal</label>
-        <label><input type="radio" name="tide" value="High">High</label>
-      </div>
+    <label>Wind (km/h)</label>
+    <input id="wind-km" />
 
-      <label style="margin-top:10px;">Weather Notes:</label>
-      <textarea id="weather-notes" placeholder="Sunny, cloudy, etc"></textarea>
-    </section>
+    <label>Tide Status</label>
+    <select id="tide">
+      <option>Normal</option>
+      <option>Low</option>
+      <option>High</option>
+    </select>
 
-    <!-- FLAVOURS -->
-    <section>
-      <h2>Flavours Available</h2>
-
-      <label>Permanent Flavours:</label>
-      <div class="flavour-list" id="perm-flavours"></div>
-
-      <label style="margin-top:16px;">Specials:</label>
-      <div class="flavour-list" id="special-flavours"></div>
-    </section>
-
-    <!-- EVENTS -->
-    <section>
-      <h2>Special Event?</h2>
-      <div class="radio-row">
-        <label><input type="radio" name="event" value="No" checked>No</label>
-        <label><input type="radio" name="event" value="Yes">Yes</label>
-      </div>
-
-      <textarea id="event-notes" placeholder="Event name / details..."
-                style="display:none; margin-top:10px;"></textarea>
-    </section>
-
-    <!-- SAVE -->
-    <button id="save-btn" type="button">Save Daily Log</button>
+    <label>Weather Notes</label>
+    <input id="weather-notes" />
   </div>
 
-  <div id="success-popup">Saved!</div>
+  <!-- FLAVOURS -->
+  <div class="section">
+    <h2>Flavours Available</h2>
+
+    <h3>Permanent Flavours</h3>
+    <div id="perm-flavours" class="flavour-list"></div>
+
+    <h3>Specials</h3>
+    <div id="special-flavours" class="flavour-list"></div>
+  </div>
+
+  <!-- SPECIAL EVENT -->
+  <div class="section">
+    <h2>Special Event?</h2>
+    <label><input type="radio" name="event" value="No" checked> No</label>
+    <label><input type="radio" name="event" value="Yes"> Yes</label>
+
+    <label>Event Name</label>
+    <input id="event-name" placeholder="Optional" />
+  </div>
+
+  <!-- NOTES -->
+  <div class="section">
+    <h2>Notes</h2>
+    <textarea id="notes-text"></textarea>
+  </div>
+
+  <button id="save-btn">Save Daily Log</button>
+  <div id="saving">Saving…</div>
+
+</div>
 
 <script>
+/* ------------------------ CONFIG ------------------------ */
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxpiMFTVb3KMVQ054Y6-Sf20KCdna0oxxd93K1Nk-JlmL905lSDRAOmUA-WcuM_6DZW/exec";
 
-const permanentFlavours = [
-  "Biscoff", "Black Sand Piha", "Dark Choco Brownie", "Dulce de Leche",
-  "Hazelnut Crunch", "Mango Bliss", "Menta Cioccolato", "Reese's Peanut Butter",
-  "Strawberry Dream", "Vanilla Oreo"
+document.getElementById("date").valueAsDate = new Date();
+
+/* -------- FLAVOUR LISTS -------- */
+const permanent = [
+  "Biscoff","Black Sand Piha","Dark Choco Brownie","Dulce de Leche",
+  "Hazelnut Crunch","Mango Bliss","Menta Cioccolato","Reese's Peanut Butter",
+  "Strawberry Dream","Vanilla Oreo"
 ];
 
-const specialFlavours = [
-  "Amarena", "Banana Caramel", "Cookie Crumble", "Chocolate Velvet",
-  "Lemon Cake Delight", "Moka", "Pineapple Paradise", "Simply Coconut",
-  "Salted White"
+const specials = [
+  "Amarena","Banana Caramel","Cookie Crumble","Chocolate Velvet","Lemon Cake Delight",
+  "Moka","Pineapple Paradise","Simply Coconut","Salted White"
 ];
 
-function renderFlavourLists() {
+function renderFlavours() {
   const permDiv = document.getElementById("perm-flavours");
   const specDiv = document.getElementById("special-flavours");
 
-  permanentFlavours.forEach(f => {
+  permanent.forEach(f => {
     permDiv.innerHTML += `
       <div class="flavour-item">
         <input type="checkbox" id="perm-${f}" checked />
-        <label for="perm-${f}">${f}</label>
+        <label>${f}</label>
       </div>`;
   });
 
-  specialFlavours.forEach(f => {
+  specials.forEach(f => {
     specDiv.innerHTML += `
       <div class="flavour-item">
         <input type="checkbox" id="spec-${f}" />
-        <label for="spec-${f}">${f}</label>
+        <label>${f}</label>
       </div>`;
   });
 }
+renderFlavours();
 
-renderFlavourLists();
+/* -------- COLLECT FORM DATA -------- */
+function collectFormData() {
+  const data = {
+    "Date": document.getElementById("date").value,
+    "Opening Time": document.getElementById("opening").value,
+    "Closing Time": document.getElementById("closing").value,
+    "Weather Max (°C)": document.getElementById("max-temp").value,
+    "Weather Min (°C)": document.getElementById("min-temp").value,
+    "Rain (mm)": document.getElementById("rain-mm").value,
+    "Wind (km/h)": document.getElementById("wind-km").value,
+    "Tide Info": document.getElementById("tide").value,
+    "Weather Notes": document.getElementById("weather-notes").value,
+    "Special Event?": document.querySelector("input[name='event']:checked").value,
+    "Event Name": document.getElementById("event-name").value,
+    "Notes": document.getElementById("notes-text").value
+  };
 
-/* EVENT RADIO BEHAVIOR */
-document.querySelectorAll("input[name='event']").forEach(r => {
-  r.addEventListener("change", (ev) => {
-    const notes = document.getElementById("event-notes");
-    notes.style.display = (ev.target.value === "Yes") ? "block" : "none";
-  });
-});
+  permanent.forEach(f => data[f] = document.getElementById(`perm-${f}`).checked ? "Yes" : "No");
+  specials.forEach(f => data[f] = document.getElementById(`spec-${f}`).checked ? "Yes" : "No");
 
-/* WEATHER FETCH */
-async function fetchWeather() {
-  const lat = -36.8485;
-  const lon = 174.7633;
-
-  try {
-    const weatherRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&timezone=Pacific/Auckland`
-    );
-
-    const w = await weatherRes.json();
-
-    document.getElementById("max-temp").value = w.daily.temperature_2m_max[0];
-    document.getElementById("min-temp").value = w.daily.temperature_2m_min[0];
-    document.getElementById("rain-mm").value = w.daily.precipitation_sum[0];
-    document.getElementById("wind-km").value = w.daily.windspeed_10m_max[0];
-
-    alert("Weather retrieved!");
-  } catch (err) {
-    alert("Weather fetch failed.");
-    console.error(err);
-  }
+  return data;
 }
 
-document.getElementById("auto-weather").addEventListener("click", fetchWeather);
+/* -------- SAVE -------- */
+document.getElementById("save-btn").addEventListener("click", async () => {
+  document.getElementById("saving").style.display = "block";
 
-/* SEND TO SCRIPT */
-async function saveLog() {
-  const date = document.getElementById("details-date").value;
-  if (!date) {
-    alert("Please select a date.");
-    return;
-  }
-
-  const data = {};
-
-  data["Date"] = date;
-  data["Weather Visual"] = document.getElementById("weather-notes").value || "";
-  data["Weather Max (°C)"] = document.getElementById("max-temp").value || "";
-  data["Weather Min (°C)"] = document.getElementById("min-temp").value || "";
-  data["Rain (mm)"]        = document.getElementById("rain-mm").value || "";
-  data["Wind (km/h)"]      = document.getElementById("wind-km").value || "";
-
-  const tideRadio = document.querySelector("input[name='tide']:checked");
-  data["Tide Info"] = tideRadio ? tideRadio.value : "";
-
-  const eventVal = document.querySelector("input[name='event']:checked").value;
-  data["Special Event?"] = eventVal;
-  data["Event Name"] = document.getElementById("event-notes").value || "";
-  data["Notes"] = "";
-
-  permanentFlavours.forEach(f => {
-    const cb = document.getElementById(`perm-${f}`);
-    data[f] = cb && cb.checked ? "Yes" : "No";
-  });
-
-  specialFlavours.forEach(f => {
-    const cb = document.getElementById(`spec-${f}`);
-    data[f] = cb && cb.checked ? "Yes" : "No";
-  });
+  const payload = {
+    data: collectFormData()
+  };
 
   try {
-    const res = await fetch(SCRIPT_URL, {
+    await fetch("https://cors.bridged.cc/" + SCRIPT_URL, {
       method: "POST",
+      mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "save", data })
+      body: JSON.stringify(payload)
     });
 
-    const popup = document.getElementById("success-popup");
-    popup.textContent = "Saved!";
-    popup.classList.add("show");
-    setTimeout(() => popup.classList.remove("show"), 2000);
+    document.getElementById("saving").style.display = "none";
+    alert("Saved!");
 
   } catch (err) {
-    alert("Failed to save log.");
     console.error(err);
+    document.getElementById("saving").style.display = "none";
+    alert("Failed to save log.");
   }
-}
-
-document.getElementById("save-btn").addEventListener("click", saveLog);
+});
 </script>
 
 </body>
 </html>
-

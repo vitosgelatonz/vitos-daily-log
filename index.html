@@ -4,8 +4,152 @@
   <meta charset="UTF-8" />
   <title>Vito's Daily Log</title>
 
+  <style>
+    :root {
+      --bg-main: #f4efea;
+      --card-bg: #ffffff;
+      --accent: #077791;
+      --accent-soft: #dfdbd2;
+      --danger: #c62828;
+      --success: #2e7d32;
+      --text-main: #333333;
+      --text-soft: #777777;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-size: 16px;
+    }
+
+    #tabs {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: var(--accent-soft);
+      color: var(--text-main);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .section {
+      margin: 12px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    h3 {
+      margin-top: 12px;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="time"],
+    input[type="date"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .flavour-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+
+    .flavour-card {
+      background: #ffffff;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .flavour-card.selected {
+      border-color: var(--accent);
+      background: #e6f3f6;
+    }
+
+    /* Save bar at bottom */
+    .save-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      padding: 10px;
+      background: rgba(244, 239, 234, 0.98);
+      backdrop-filter: blur(6px);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    #saveBtn {
+      padding: 12px 40px;
+      font-size: 18px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      min-width: 160px;
+    }
+
+    #saveBtn:disabled {
+      opacity: 0.7;
+      cursor: default;
+    }
+  </style>
+
   <script>
-    // 🔗 YOUR NEW BACKEND URL
+    // 🔗 BACKEND URL (from your current deployment)
     const BACKEND_URL =
       "https://script.google.com/macros/s/AKfycbx8tO08b3WlPs-bbrHVBsAEVCqqc2mXcJCUce1aLmBWbVY0TY2UdbNaKEaF00aU2b_cog/exec";
 
@@ -25,7 +169,7 @@
     document.addEventListener("DOMContentLoaded", () => {
 
       /********************************************
-       * FIXED — USE LOCAL NZ DATE, NOT UTC
+       * USE LOCAL NZ DATE, NOT UTC
        ********************************************/
       const todayISO = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local
       const todayUser = toUserFormat(todayISO);                 // DD/MM/YYYY
@@ -64,6 +208,15 @@
       });
 
       /********************************************
+       * FLAVOUR CARD TOGGLING (kiosk style)
+       ********************************************/
+      document.querySelectorAll(".flavour-card").forEach(card => {
+        card.addEventListener("click", () => {
+          card.classList.toggle("selected");
+        });
+      });
+
+      /********************************************
        * SAVE BUTTON
        ********************************************/
       document.getElementById("saveBtn").addEventListener("click", saveDay);
@@ -87,27 +240,51 @@
       const data = result.data;
 
       Object.keys(data).forEach(key => {
-        const el = document.querySelector(`[data-field="${key}"]`);
-        if (!el) return;
+        const elements = document.querySelectorAll(`[data-field="${key}"]`);
+        if (!elements.length) return;
 
-        if (el.type === "checkbox") {
-          el.checked = data[key] === true || data[key] === "TRUE";
-        }
-        else if (key === "Date") {
-          const dateObj = new Date(data[key]);
-          const iso = dateObj.toLocaleDateString("en-CA");
-
-          document.getElementById("datePicker").value = iso;
-          document.getElementById("date").value = toUserFormat(iso);
-        }
-        else {
-          el.value = data[key];
-        }
+        elements.forEach(el => {
+          // Flavour cards: interpret YES/NO or TRUE/FALSE
+          if (el.classList && el.classList.contains("flavour-card")) {
+            const v = data[key];
+            const isSelected =
+              v === true ||
+              v === "TRUE" ||
+              v === "True" ||
+              v === "YES" ||
+              v === "Yes" ||
+              v === "Y" ||
+              v === 1 ||
+              v === "1";
+            if (isSelected) {
+              el.classList.add("selected");
+            } else {
+              el.classList.remove("selected");
+            }
+          }
+          else if (key === "Date") {
+            // Date handling: convert sheet date to picker + hidden
+            const dateObj = new Date(data[key]);
+            const iso = dateObj.toLocaleDateString("en-CA");
+            document.getElementById("datePicker").value = iso;
+            document.getElementById("date").value = toUserFormat(iso);
+          }
+          else if (el.type === "checkbox") {
+            el.checked =
+              data[key] === true ||
+              data[key] === "TRUE" ||
+              data[key] === "Yes" ||
+              data[key] === "YES";
+          }
+          else {
+            el.value = data[key];
+          }
+        });
       });
     }
 
     /******************************************************
-     * SAVE DAY — ⭐ Now shows "Saving…" + disables button
+     * SAVE DAY — includes "Saving…" indicator on button
      *****************************************************/
     function saveDay() {
       const btn = document.getElementById("saveBtn");
@@ -119,7 +296,18 @@
 
       fieldElements.forEach(el => {
         const key = el.dataset.field;
-        payload[key] = (el.type === "checkbox") ? el.checked : (el.value || "");
+        if (!key) return;
+
+        if (el.classList && el.classList.contains("flavour-card")) {
+          // For flavour cards, save YES / NO
+          payload[key] = el.classList.contains("selected") ? "YES" : "NO";
+        }
+        else if (el.type === "checkbox") {
+          payload[key] = el.checked ? true : false;
+        }
+        else {
+          payload[key] = el.value || "";
+        }
       });
 
       google.script.run
@@ -144,8 +332,15 @@
     function clearForm() {
       const els = document.querySelectorAll("[data-field]");
       els.forEach(el => {
-        if (el.type === "checkbox") el.checked = false;
-        else if (el.dataset.field !== "Date") el.value = "";
+        if (el.classList && el.classList.contains("flavour-card")) {
+          el.classList.remove("selected");
+        }
+        else if (el.type === "checkbox") {
+          el.checked = false;
+        }
+        else if (el.dataset.field !== "Date") {
+          el.value = "";
+        }
       });
     }
   </script>
@@ -165,10 +360,10 @@
 
     <h3>Date</h3>
 
-    <!-- Visible date picker -->
+    <!-- Visible date picker (YYYY-MM-DD) -->
     <input type="date" id="datePicker" />
 
-    <!-- Hidden DD/MM/YYYY saved to sheet -->
+    <!-- Hidden DD/MM/YYYY saved to spreadsheet -->
     <input type="hidden" id="date" data-field="Date" />
 
     <h3>Weather (auto + manual)</h3>
@@ -214,33 +409,35 @@
   <div id="flavours" class="section" style="display:none">
 
     <h3>Permanent Flavours</h3>
-
-    <label><input type="checkbox" data-field="Biscoff" /> Biscoff</label><br>
-    <label><input type="checkbox" data-field="Black Sand Piha" /> Black Sand Piha</label><br>
-    <label><input type="checkbox" data-field="Dark Choco Brownie" /> Dark Choco Brownie</label><br>
-    <label><input type="checkbox" data-field="Dulce de Leche" /> Dulce de Leche</label><br>
-    <label><input type="checkbox" data-field="Hazelnut Crunch" /> Hazelnut Crunch</label><br>
-    <label><input type="checkbox" data-field="Mango Bliss" /> Mango Bliss</label><br>
-    <label><input type="checkbox" data-field="Menta Cioccolato" /> Menta Cioccolato</label><br>
-    <label><input type="checkbox" data-field="Reese's Peanut Butter" /> Reese's Peanut Butter</label><br>
-    <label><input type="checkbox" data-field="Strawberry Dream" /> Strawberry Dream</label><br>
-    <label><input type="checkbox" data-field="Vanilla Oreo" /> Vanilla Oreo</label><br>
+    <div class="flavour-grid">
+      <div class="flavour-card" data-field="Biscoff">Biscoff</div>
+      <div class="flavour-card" data-field="Black Sand Piha">Black Sand Piha</div>
+      <div class="flavour-card" data-field="Dark Choco Brownie">Dark Choco Brownie</div>
+      <div class="flavour-card" data-field="Dulce de Leche">Dulce de Leche</div>
+      <div class="flavour-card" data-field="Hazelnut Crunch">Hazelnut Crunch</div>
+      <div class="flavour-card" data-field="Mango Bliss">Mango Bliss</div>
+      <div class="flavour-card" data-field="Menta Cioccolato">Menta Cioccolato</div>
+      <div class="flavour-card" data-field="Reese's Peanut Butter">Reese's Peanut Butter</div>
+      <div class="flavour-card" data-field="Strawberry Dream">Strawberry Dream</div>
+      <div class="flavour-card" data-field="Vanilla Oreo">Vanilla Oreo</div>
+    </div>
 
     <h3>Daily Specials</h3>
-
-    <label><input type="checkbox" data-field="Amarena" /> Amarena</label><br>
-    <label><input type="checkbox" data-field="Banana Caramel" /> Banana Caramel</label><br>
-    <label><input type="checkbox" data-field="Cookie Crumble" /> Cookie Crumble</label><br>
-    <label><input type="checkbox" data-field="Chocolate Velvet" /> Chocolate Velvet</label><br>
-    <label><input type="checkbox" data-field="Lemon Cake Delight" /> Lemon Cake Delight</label><br>
-    <label><input type="checkbox" data-field="Moka" /> Moka</label><br>
-    <label><input type="checkbox" data-field="Pineapple Paradise" /> Pineapple Paradise</label><br>
-    <label><input type="checkbox" data-field="Simply Coconut" /> Simply Coconut</label><br>
-    <label><input type="checkbox" data-field="Salted White" /> Salted White</label><br>
+    <div class="flavour-grid">
+      <div class="flavour-card" data-field="Amarena">Amarena</div>
+      <div class="flavour-card" data-field="Banana Caramel">Banana Caramel</div>
+      <div class="flavour-card" data-field="Cookie Crumble">Cookie Crumble</div>
+      <div class="flavour-card" data-field="Chocolate Velvet">Chocolate Velvet</div>
+      <div class="flavour-card" data-field="Lemon Cake Delight">Lemon Cake Delight</div>
+      <div class="flavour-card" data-field="Moka">Moka</div>
+      <div class="flavour-card" data-field="Pineapple Paradise">Pineapple Paradise</div>
+      <div class="flavour-card" data-field="Simply Coconut">Simply Coconut</div>
+      <div class="flavour-card" data-field="Salted White">Salted White</div>
+    </div>
 
   </div>
 
-  <!-- CASH SECTION -->
+  <!-- CASH -->
   <div id="cash" class="section" style="display:none">
 
     <h3>Cash Start</h3>
@@ -251,9 +448,9 @@
 
   </div>
 
-  <!-- SAVE BUTTON -->
-  <div style="position:fixed; bottom:20px; left:0; right:0; text-align:center;">
-    <button id="saveBtn" style="padding:15px 40px; font-size:20px;">SAVE</button>
+  <!-- SAVE BUTTON BAR -->
+  <div class="save-bar">
+    <button id="saveBtn">SAVE</button>
   </div>
 
 </body>
